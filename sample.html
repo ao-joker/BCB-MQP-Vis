@@ -60,5 +60,41 @@
       .attr("stroke", "red")
       .attr("fill", "red")
 
+  //Make the sample PPI
+  var nodesArray = 
+    [ {index: "A", x: 501.33100547182295, y: 351.5119280235308, vy: 0.00034946527876487916, vx: 0.00026781265966099795},
+      {index: "B", x: 532.4951140547162, y: 347.14664942025365, vy: -0.0001721667153926363, vx: 0.0002604939457255526},
+      {index: "C", x: 507.1028489410516, y: 308.78170729085355, vy: 0.00011909691641299856, vx: -0.00011688798492315391},
+      {index: "D", x: 484.55852164568813, y: 254.4153895484658, vy: -0.00004105312000600592, vx: -0.00013788695597242388},
+      {index: "E", x: 428.83979009173135, y: 244.08082929968097, vy: -0.000037110620013802414, vx: -0.00020242133924364204},
+      {index: "F", x: 385.1712682375966, y: 249.16548799887047, vy: 0.0001568016219195408, vx: -0.0002609799128057076}]
+      
+  var graph = ({
+    nodes: nodesArray.from({length:13}, () => ({})),
+    links: 
+    [
+      {source: "A", target: "B"},
+      {source: "A", target: "C"},
+      {source: "A", target: "D"},
+      {source: "B", target: "C"},
+      {source: "B", target: "E"},
+      {source: "C", target: "E"},
+      {source: "D", target: "F"}]}) 
+
+  d3.select("#PPI")
+    .attr("viewbox", [0,0,1600, 1000]),
+      link = d3.select("#PPI")
+                  .selectAll(".link")
+                  .data(graph.links)
+                  .join("line")
+                  .classed("link", true),
+      nodes =  d3.select("#PPI")
+                  .selectAll(".node")
+                  .data(graph.nodes)
+                  .force("charge", d3.forceManyBody())
+                  .force("center", d3.forceCenter(1600/2, 1000/2))
+                  .force("link", d3.forceLink(graph.links))
+
+
   
 </script>
