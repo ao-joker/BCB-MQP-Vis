@@ -68,7 +68,7 @@
       {index: "D", x: 484.55852164568813, y: 254.4153895484658, vy: -0.00004105312000600592, vx: -0.00013788695597242388},
       {index: "E", x: 428.83979009173135, y: 244.08082929968097, vy: -0.000037110620013802414, vx: -0.00020242133924364204},
       {index: "F", x: 385.1712682375966, y: 249.16548799887047, vy: 0.0001568016219195408, vx: -0.0002609799128057076}]
-      
+
   var graph = ({
     nodes: nodesArray.from({length:13}, () => ({})),
     links: 
@@ -89,11 +89,21 @@
                   .join("line")
                   .classed("link", true),
       nodes =  d3.select("#PPI")
-                  .selectAll(".node")
-                  .data(graph.nodes)
-                  .force("charge", d3.forceManyBody())
-                  .force("center", d3.forceCenter(1600/2, 1000/2))
-                  .force("link", d3.forceLink(graph.links))
+                 .selectAll(".node")
+                 .data(graph.nodes)
+                 .join("circle")
+                 .attr("r", 12)
+                 .classed("node", true)
+                 .classed("fixed", d => d.fx !== undefined);
+
+  yield svg.node();
+
+  const simulation = d3
+    .forceSimulation()
+    .nodes(graph.nodes)
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("link", d3.forceLink(graph.links))
 
 
   
