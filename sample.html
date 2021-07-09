@@ -96,7 +96,7 @@
                  .classed("node", true)
                  .classed("fixed", d => d.fx !== undefined);
 
-  yield svg.node();
+  yield d3.select("#PPI").node();
 
   const simulation = d3
     .forceSimulation()
