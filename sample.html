@@ -24,13 +24,24 @@
 <!--Need to input some sort of button here to allow for the input of data that is tied to svg2-->
 
 <script>
-  //Some code that takes in the data for the metabolic network, regulation, and PPI info
+  /*Some code that takes in the data for the metabolic network, regulation, and PPI info*/
+  //
 
-  //Some code that draws the entire metabolic pathways (svg1)
+  /*Some code that draws the entire metabolic pathways (svg1)*/
+  //
+  d3.select("#Pathway")
+    .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 2000)
+      .attr("length", 2000)
+      .attr("stroke", "black")
 
-  //Some code that notes changes in regulation in response to input data (svg2)
+  /*Some code that notes changes in regulation in response to input data (svg2)*/
+  //
 
-  //Some code that creates a PPI for a selected protein in the network (svg3)
+  /*Some code that creates a PPI for a selected protein in the network (svg3)*/
+  //
 
   
 </script>
