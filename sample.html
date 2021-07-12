@@ -62,6 +62,8 @@
         .attr("height", 1000)
         .attr("stroke", "blue")
         .attr("fill", "blue")
+
+    
   }
 
   /*Some code that creates a PPI for a selected protein in the network (svg3)*/
@@ -119,13 +121,13 @@
               .attr("fill", "green")
               .attr("stroke", "black")*/
 
-      updateNodes()
       updateLinks()
+      updateNodes()
     }
 
     function updateNodes()
     {
-      var u = d3//.select("#PPI")
+      u = d3.select("#PPI")
                 .select(".nodes")
                 .selectAll("text")
                 .data(nodes)
@@ -143,7 +145,7 @@
 
     function updateLinks()
     {
-      var u = d3//.select("#PPI")
+      var u = d3.select("#PPI")
                 .select(".links")
                 .selectAll("line")
                 .data(links)
