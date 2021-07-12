@@ -27,39 +27,54 @@
   /*Some code that takes in the data for the metabolic network, regulation, and PPI info*/
   //
 
+  function createVis()
+  {
+    makePathway()
+    makeRegulationList()
+    makePPI()
+  }
+
   /*Some code that draws the entire metabolic pathways (svg1)*/
   //SAMPLE SPACE
-  d3.select("#Pathway")
-    .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 4000)
-      .attr("height", 2000)
-      .attr("stroke", "black")
-      .attr("fill", "black")
+  function makePathway()
+  {
+    d3.select("#Pathway")
+      .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 4000)
+        .attr("height", 2000)
+        .attr("stroke", "black")
+        .attr("fill", "black")
+  }
 
   /*Some code that notes changes in regulation in response to input data (svg2)*/
   //SAMPLE SPACE
-  d3.select("#Regulation")
-    .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 1400)
-      .attr("height", 1000)
-      .attr("stroke", "blue")
-      .attr("fill", "blue")
+  function makeRegulationList()
+  {
+    d3.select("#Regulation")
+      .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 1400)
+        .attr("height", 1000)
+        .attr("stroke", "blue")
+        .attr("fill", "blue")
+  }
 
   /*Some code that creates a PPI for a selected protein in the network (svg3)*/
   //SAMPLE SPACE
-  d3.select("#PPI")
-    .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 1600)
-      .attr("height", 1000)
-      .attr("stroke", "red")
-      .attr("fill", "red")
-
+  function makePPI()
+  {
+    d3.select("#PPI")
+      .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 1600)
+        .attr("height", 1000)
+        .attr("stroke", "red")
+        .attr("fill", "red")
+  }
 
   
 </script>
