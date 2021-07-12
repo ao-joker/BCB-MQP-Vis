@@ -68,33 +68,34 @@
   //SAMPLE SPACE
   function makePPI()
   {
-    /*d3.select("#PPI")
+    d3.select("#PPI")
       .append("rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", 1600)
         .attr("height", 1000)
         .attr("stroke", "red")
-        .attr("fill", "red")*/
-
-    var width = 300, height = 300
-    var nodes = d3.range(100).map(function(d){return {radius: 25 * Math.random()}})
+        .attr("fill", "red")
+    var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
+    var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
+    
+    var nodes = [{},{},{},{},{}]//d3.range(5).map(function(d){return {radius: (25 * Math.random()) + 100}})
 
     var simulation = d3.forceSimulation(nodes)
                        .force('charge', d3.forceManyBody())
-                       .force('center', d3.forceCenter(width / 2, height / 2))
+                       .force('center', d3.forceCenter(500, 500))
                        .on('tick', ticked(nodes));
   }
 
   function ticked(nodes) 
   {
-    var u = d3.select('svg')
+    var u = d3.select('#PPI')
               .selectAll('circle')
               .data(nodes)
               .join('circle')
               .attr('r', 5)
-              .attr('cx', function(d) {return d.x})
-              .attr('cy', function(d) {return d.y})
+              .attr('cx', function(d) {console.log(d); return d.x})
+              .attr('cy', function(d) {console.log(d); return d.y})
 
     
   }
