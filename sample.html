@@ -19,7 +19,7 @@
 -->
 <svg id="Pathway" width="4000" height="2000"></svg>
 <svg id="Regulation" width="1400" height="1000"></svg>
-<svg id="PPI" width="1600" height="1000"></svg>
+<svg id="PPI" width="1600" height="1000"> <g class="links"></g> <g class="nodes"></g></svg>
 
 <!--Need to input some sort of button here to allow for the input of data that is tied to svg2-->
 
@@ -126,7 +126,6 @@
     function updateNodes()
     {
       var u = d3.select("#PPI")
-                .append("g")
                 .select(".nodes")
                 .selectAll("text")
                 .data(nodes)
@@ -145,7 +144,6 @@
     function updateLinks()
     {
       var u = d3.select("#PPI")
-                .append("g")
                 .select(".links")
                 .selectAll("line")
                 .data(links)
