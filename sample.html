@@ -90,12 +90,12 @@
 
     function ticked()
     {
-      updateLinks()
-      updateNodes()
+      updateLinksA()
+      updateNodesA()
 
     }
 
-    function updateNodes()
+    function updateNodesA()
     {
       u = d3.select("#Pathway")
                 //.select(".nodes")
@@ -108,6 +108,7 @@
                 .attr("dy", function(d){return 5})
                 .style("font-size", "30px")
                 .attr("id", function(d){return d.name})
+                .attr("stroke", "white")
                 /*.attr("r", function(d) {return d.radius})
                 .attr("cx", function(d) {return d.x})
                 .attr("cy", function(d) {console.log(d); return d.y})
@@ -115,10 +116,10 @@
                 .attr("stroke", "black")*/
 
       //Make all nodes that are transcription factors invisible
-
+      
     }
 
-    function updateLinks()
+    function updateLinksA()
     {
       var u = d3.select("#Pathway")
                 //.select(".links")
@@ -129,10 +130,9 @@
                 .attr("y1", function(d){return d.source.y})
                 .attr("x2", function(d){return d.target.x})
                 .attr("y2", function(d){return d.target.y})
-                .attr("stroke", "black")
+                .attr("stroke", "white")
     }
   }
-
 
   /*Some code that notes changes in regulation in response to input data (svg2)*/
   //SAMPLE SPACE
