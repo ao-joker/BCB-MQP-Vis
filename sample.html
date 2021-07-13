@@ -86,9 +86,9 @@
                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
                        .force("link", d3.forceLink().links(links))
                        //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
-                       .on("tick", ticked)    //Draws the objects
+                       .on("tick", tickedA)    //Draws the objects
 
-    function ticked()
+    function tickedA()
     {
       updateLinksA()
       updateNodesA()
