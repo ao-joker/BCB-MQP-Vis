@@ -33,7 +33,7 @@
   {
     makePathway()
     makeRegulationList()
-    makePPI()
+    makePPIBase()
   }
 
   /*Some code that draws the entire metabolic pathways (svg1)*/
@@ -50,7 +50,7 @@
         .attr("fill", "black")
 
     //For easy sorting, make all TF end with a captial T or something that will sort out or something to make invisible
-    var nodes = [{name: "A"}, 
+    var nodesP = [{name: "A"}, 
                  {name: "B"}, 
                  {name: "C"},
                  {name: "D"},
@@ -62,7 +62,7 @@
                  {name: "TF2"}, //9
                  {name: "TF3"}] //10
     
-    var links = [{source: 0, target: 1},
+    var linksP = [{source: 0, target: 1},
                  {source: 1, target: 2},
                  {source: 1, target: 5},
                  {source: 2, target: 4},
@@ -80,7 +80,55 @@
       -For proteins that serve to repress others, mark with a blockhead and line
       -For proteins that serve to activate others, mark with an arrowhead and a line
     */
+    var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
+    var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
 
+    var pathway =  d3.forceSimulation(nodesP)
+                       .force("charge", d3.forceManyBody().strength(-50))       //Strength of the attraction/repel
+                       .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
+                       .force("link", d3.forceLink().links(linksP))
+                       //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
+                       .on("tick", ticked)    //Draws the objects
+
+    function ticked()
+    {
+      updateLinks()
+      updateNodes()
+    }
+
+    function updateLinks()
+    {
+      var u = d3.select("#Pathway")
+                //.select(".links")
+                .selectAll("line")
+                .data(linksP)
+                .join("line")
+                .attr("x1", function(d){return d.source.x})
+                .attr("y1", function(d){return d.source.y})
+                .attr("x2", function(d){return d.target.x})
+                .attr("y2", function(d){return d.target.y})
+                .attr("stroke", "white")
+                //.attr('marker-end', 'url(#arrow)')
+    }
+
+    function updateNodes()
+    {
+      u = d3.select("#Pathway")
+                //.select(".nodes")
+                .selectAll("text")
+                .data(nodesP)
+                .join("text")
+                .text(function(d) {return d.name})
+                .attr("x", function(d){return d.x})
+                .attr("y", function(d){return d.y})
+                .attr("dy", function(d){return 10})
+                .style("font-size", "30px")
+                .style("fill", "white")
+                .on("click", function(d)
+                             {
+                                makePPI(d.name)
+                             })
+    }
   }
 
   /*Some code that notes changes in regulation in response to input data (svg2)*/
@@ -108,7 +156,7 @@
       -The node is identified, and that node is found in a dictionary containing the node in question and its interacting proteins
       -
   */
-  function makePPI()
+  function makePPIBase()
   {
     d3.select("#PPI")
       .append("rect")
@@ -119,7 +167,16 @@
         .attr("stroke", "red")
         .attr("fill", "red")
 
-    
+  }
+
+  //Which proteins it interacts with
+  /*
+    -Should list the proteins that it binds with
+    -Should list the proteins that it regulates in some way
+    -Should list the proteins regulated by it (distinguised from protein of interest to protein and protein on protein of interest)
+  */
+  function makePPI(proteinInterest)
+  {
     var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
     var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
     
@@ -130,13 +187,21 @@
                  {name: "E"},
                  {name: "F"},
                  {name: "G"},
-                 {name: "H"}] //d3.range(100).map(function(d){return {radius: (25 * Math.random())}})
-
-    var links = [{source: 4, target: 3},
-                 {source: 4, target: 6}]
+                 {name: "H"},
+                 {name: "J"},
+                 {name: "I"}]
+    
+    var links = [{souce: 1, tagert: 2},
+                 {souce: 3, tagert: 5},
+                 {souce: 3, tagert: 8},
+                 {souce: 4, tagert: 8},
+                 {souce: 5, tagert: 3},
+                 {souce: 8, tagert: 9},
+                 {souce: 8, tagert: 3},
+                 {souce: 8, tagert: 4}]
 
     var simulation = d3.forceSimulation(nodes)
-                       .force("charge", d3.forceManyBody().strength(-50))       //Strength of the attraction/repel
+                       .force("charge", d3.forceManyBody().strength(-30))       //Strength of the attraction/repel
                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
                        .force("link", d3.forceLink().links(links))
                        //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
@@ -170,6 +235,17 @@
                 .attr("y", function(d){return d.y})
                 .attr("dy", function(d){return 5})
                 .style("font-size", "30px")
+                .attr("fill", function(d, proteinInterest)
+                              {
+                                if(d.name != proteinInterest)
+                                {
+                                  return "red"
+                                }
+                                else
+                                {
+                                  return "black"
+                                }
+                })
                 /*.attr("r", function(d) {return d.radius})
                 .attr("cx", function(d) {return d.x})
                 .attr("cy", function(d) {console.log(d); return d.y})
