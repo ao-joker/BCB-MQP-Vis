@@ -148,6 +148,19 @@
         .attr("fill", "blue")
 
     
+
+    //Take in the file inputted
+    //Note protein names and fold change
+    /*
+      Each protein will have the following information about them:
+        PROTEIN NAME, PATHWAY FOUND, TYPE OF CHANGE (+ or -), OTHER IMPACTED PROTEINS
+
+      Each TF will have the following information about it:
+        TF NAME, PATHWAY FOUND, TYPE OF CHANGE (+ or -), PROTEINS/TF IMPACTED
+
+      Searching algorithm: For each protein/TF in the list, note if it is in the file input
+        If it is there, adjust list as necessary 
+    */
   }
 
   /*Some code that creates a PPI for a selected protein in the network (svg3)*/
@@ -170,19 +183,6 @@
         .attr("stroke", "red")
         .attr("fill", "red")
 
-
-    //Take in the file inputted
-    //Note protein names and fold change
-    /*
-      Each protein will have the following information about them:
-        PROTEIN NAME, PATHWAY FOUND, TYPE OF CHANGE (+ or -), OTHER IMPACTED PROTEINS
-
-      Each TF will have the following information about it:
-        TF NAME, PATHWAY FOUND, TYPE OF CHANGE (+ or -), PROTEINS/TF IMPACTED
-
-      Searching algorithm: For each protein/TF in the list, note if it is in the file input
-        If it is there, adjust list as necessary 
-    */
     
   }
 
