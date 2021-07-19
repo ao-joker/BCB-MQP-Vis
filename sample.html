@@ -150,6 +150,7 @@
     
 
     //Take in the file inputted
+    
     //Note protein names and fold change
     /*
       Each protein will have the following information about them:
@@ -159,8 +160,12 @@
         TF NAME, PATHWAY FOUND, TYPE OF CHANGE (+ or -), PROTEINS/TF IMPACTED
 
       Searching algorithm: For each protein/TF in the list, note if it is in the file input
-        If it is there, adjust list as necessary 
+        If it is there, add following top rules
+        If it is not there in file, do not add to a list with the top rules (also note a 0?)
+
     */
+
+
   }
 
   /*Some code that creates a PPI for a selected protein in the network (svg3)*/
