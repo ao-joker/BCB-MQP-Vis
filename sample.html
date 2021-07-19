@@ -22,7 +22,13 @@
 <svg id="PPI" width="1600" height="1000"></svg>
 
 <!--Need to input some sort of button here to allow for the input of data that is tied to svg2-->
+<form>
 <input type="file" id="RegData">
+
+<div>
+  <button>Submit</button>
+</div>
+</form>
 
 <script>
   /*Some code that takes in the data for the metabolic network, regulation, and PPI info*/
@@ -85,7 +91,7 @@
     var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
 
     var pathway =  d3.forceSimulation(nodesP)
-                       .force("charge", d3.forceManyBody().strength(-50))       //Strength of the attraction/repel
+                       .force("charge", d3.forceManyBody().strength(-500))       //Strength of the attraction/repel
                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
                        .force("link", d3.forceLink().links(linksP))
                        //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
@@ -150,7 +156,9 @@
     
 
     //Take in the file inputted
-    
+    var file = document.querySelector('input')
+
+    console.log(file)
     //Note protein names and fold change
     /*
       Each protein will have the following information about them:
