@@ -32,7 +32,15 @@
 
 <script>
   /*Some code that takes in the data for the metabolic network, regulation, and PPI info*/
-  //
+  //Saving the file to the server
+  async function saveFile()
+  {
+    let formData = new formData()
+    formData.append("file", fileupload[0])
+    await fetch("/upload.php", {method: "POST", body: formData})
+
+    alert("Your file has been uploaded succesfully")
+  }
 
   createVis()
 
