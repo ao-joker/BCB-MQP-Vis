@@ -39,6 +39,7 @@
     formData.append("file", fileupload[0])
     await fetch("/upload.php", {method: "POST", body: formData})
 
+    //Has the file been uploaded?
     alert("Your file has been uploaded succesfully")
   }
 
