@@ -26,22 +26,13 @@
 <input type="file" id="RegData">
 
 <div>
-  <button id="UploadButton" onclick="saveFile()">Upload Seq Data</button>
+  <button id="UploadButton">Upload Seq Data</button>
 </div>
 </form>
 
 <script>
   /*Some code that takes in the data for the metabolic network, regulation, and PPI info*/
   //Saving the file to the server
-  async function saveFile()
-  {
-    let formData = new formData()
-    formData.append("file", fileupload[0])
-    await fetch("/upload.php", {method: "POST", body: formData})
-
-    //Has the file been uploaded?
-    alert("Your file has been uploaded succesfully")
-  }
 
   createVis()
 
