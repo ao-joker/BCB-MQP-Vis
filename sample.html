@@ -172,15 +172,30 @@
         If it is not there in file, do not add to a list with the top rules (also note a 0?)
 
     */
-     d3.select("#Regulation")
+    d3.select("#Regulation")
        .append("text")
          .attr("x", 100)
          .attr("y", 100)
          .attr("fill", "white")
          .attr("font-size", 30)
-         .text("TF/Protein Source | Pathway | Regulation Type | Target | FC")
+         .attr("stroke", "bold")
+         .text("TF/Protein Source | Pathway | Regulation Type | Target | FC of Source")
 
-     
+    d3.select("#Regulation")
+       .append("text")
+         .attr("x", 100)
+         .attr("y", 150)
+         .attr("fill", "white")
+         .attr("font-size", 30)
+         .text("Protein B | Sample Pathway |  Upregulation | Protein C | 1.5")
+
+    d3.select("#Regulation")
+       .append("text")
+         .attr("x", 100)
+         .attr("y", 200)
+         .attr("fill", "white")
+         .attr("font-size", 30)
+         .text(" TF3 | Sample Pathway |  Downregulation | Protein G | -0.8")   
 
 
   }
