@@ -60,18 +60,47 @@
     d3.csv('tester1.csv').then(
       function(data)
       {
+        //console.log(data.length)
+        var master = dataOrg(data)
 
-        var nodesP = assignNodes(data)
-        var linksP = assignLinks(data)
+        console.log(master.length)
 
-        function assignNodes(data)
+        var nodesP = assignNodes(master)
+        var linksP = assignLinks(master)
+
+        function dataOrg(data)
         {
-          
+          let arr = []
+
+          for(var i = 0; i < data.length; i++)
+          { 
+            var proteinObject = 
+            {
+                name: data[i]["Protein"],
+                connection: data[i]["Connection"]
+            }
+
+            arr.push(proteinObject)
+          }
+
+          return arr;
+
         }
 
-        function assignLinks(data)
+        function assignNodes(master)
         {
+           let arr = []
 
+
+
+           return arr;
+        }
+
+        function assignLinks(master)
+        {
+          let arr = []
+
+          return arr;
         }
 
       })

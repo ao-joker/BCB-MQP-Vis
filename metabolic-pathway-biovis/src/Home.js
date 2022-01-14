@@ -24,6 +24,8 @@ const Home = () => {
         //Declare a temporary array that is able to hold the contents to be passed to the masterArray
         let arr = []
 
+        //Take in an manipulate the csv data to organize a ton of protein objects
+        //Each protein object will be pushed into the temporary array arr
         d3.csv("FINAL SET - Sheet1.csv").then(
             function(data)
             {
