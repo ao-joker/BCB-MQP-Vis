@@ -1,6 +1,8 @@
 import './App.css';
+import Home from './Home';
 
-function App() {
+function App() 
+{
 
   //Some constant titles
   const acknowledgements = "BCB MQP Advisor: Dr. Lane Harrison  ;  BBT MQP Advisor: Dr. Scarlet Shell";
