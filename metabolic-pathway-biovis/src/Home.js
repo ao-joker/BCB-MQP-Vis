@@ -51,9 +51,9 @@ const Home = () => {
     return(
         <div className="home">
             <h2>The Pathway Itself!</h2>
-            <svg id="Pathway" width="1000" height="1000"></svg>
-            <svg id="Regulation" width="1400" height="1000"></svg>
-            <svg id="PPI" width="500" height="500"></svg>
+            <svg id="Pathway" width="400" height="200"></svg>
+            <svg id="Regulation" width="140" height="100"></svg>
+            <svg id="PPI" width="160" height="100"></svg>
             
         </div>
     );
