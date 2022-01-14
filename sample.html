@@ -55,9 +55,31 @@
         .attr("height", 2000)
         .attr("stroke", "black")
         .attr("fill", "black")
+    
+    //Testing csv input
+    d3.csv('tester1.csv').then(
+      function(data)
+      {
+
+        var nodesP = assignNodes(data)
+        var linksP = assignLinks(data)
+
+        function assignNodes(data)
+        {
+          
+        }
+
+        function assignLinks(data)
+        {
+
+        }
+
+      })
+
+
 
     //For easy sorting, make all TF end with a captial T or something that will sort out or something to make invisible
-    var nodesP = [{name: "A"}, 
+    /*var nodesP = [{name: "A"}, 
                  {name: "B"}, 
                  {name: "C"},
                  {name: "D"},
@@ -79,7 +101,7 @@
                  {source: 4, target: 6},
                  {source: 8, target: 4},
                  {source: 9, target: 5},
-                 {source: 10, target: 6}]
+                 {source: 10, target: 6}]*/
 
     //Construct sample pathway
     /*

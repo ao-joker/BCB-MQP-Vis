@@ -6,14 +6,41 @@ const Home = () => {
     
     //Here, I will make a call to all the svg related functions
     useEffect(() => {
-        makePathway()
-        makeRegulationList()
-        makePPIBase()
+        
+        //Make the final set of organized data
+        var masterArray = organizeData()
+        
+        makePathway(masterArray)
+        makeRegulationList(masterArray)
+        makePPIBase(masterArray)
     })
 
+    /*
+        Here is the function that organizes all the data from the inputted csv
 
-    //Observe, an svg related function
-    function makePathway(){
+    */
+    function organizeData()
+    {
+        //Declare a temporary array that is able to hold the contents to be passed to the masterArray
+        let arr = []
+
+        d3.csv("FINAL SET - Sheet1.csv").then(
+            function(data)
+            {
+
+            })
+
+        return arr;
+    }
+
+    /*
+        Here is the function for making the main pathway
+            - Allows one to see a pathway selected
+            - Can select and see a different pathway
+            - Able to see different layouts (Only proteins, protein to molecules, with transcription factors present)
+    */
+    function makePathway(masterArray)
+    {
         d3.select("#Pathway")
         .append("rect")
           .attr("x", 0)
@@ -22,9 +49,13 @@ const Home = () => {
           .attr("height", 2000)
           .attr("stroke", "black")
           .attr("fill", "black")
+
+
+        function
     }
 
-    function makeRegulationList(){
+    function makeRegulationList(masterArray)
+    {
        
         d3.select("#Regulation")
         .append("rect")
@@ -37,7 +68,7 @@ const Home = () => {
   
     }
 
-    function makePPIBase()
+    function makePPIBase(masterArray)
     {
         d3.select("#PPI")
         .append("rect")
