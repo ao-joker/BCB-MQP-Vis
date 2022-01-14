@@ -10,7 +10,7 @@ function App() {
     <div className="App">
       <div className="content">
         <h1><i>Mycobacterium tuberculosis</i> Metabolic Pathway Biovisualization</h1>
-         <h3>An MQP compelted by Adrian Orszulak</h3>
+         <h3>An MQP completed by Adrian Orszulak</h3>
          <h4>{acknowledgements}</h4>
          <Home></Home>
       </div>
