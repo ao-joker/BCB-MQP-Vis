@@ -63,7 +63,7 @@
         //console.log(data.length)
         var master = dataOrg(data)
 
-        console.log(master.length)
+        console.log(master[0])
 
         var nodesP = assignNodes(master)
         var linksP = assignLinks(master)
@@ -89,11 +89,14 @@
 
         function assignNodes(master)
         {
-           let arr = []
+          let arr = []
 
+          for(var i = 0; i < master.length; i++)
+          {
+            
+          }
 
-
-           return arr;
+          return arr;
         }
 
         function assignLinks(master)
