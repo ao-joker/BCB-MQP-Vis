@@ -1,8 +1,7 @@
 import './App.css';
 import Home from './Home';
 
-function App() 
-{
+function App() {
 
   //Some constant titles
   const acknowledgements = "BCB MQP Advisor: Dr. Lane Harrison  ;  BBT MQP Advisor: Dr. Scarlet Shell";
@@ -13,6 +12,7 @@ function App()
         <h1><i>Mycobacterium tuberculosis</i> Metabolic Pathway Biovisualization</h1>
          <h3>An MQP compelted by Adrian Orszulak</h3>
          <h4>{acknowledgements}</h4>
+         <Home></Home>
       </div>
     </div>
   );
