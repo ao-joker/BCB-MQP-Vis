@@ -8,11 +8,18 @@ const Home = () => {
     useEffect(() => {
         
         //Make the final set of organized data
-        var masterArray = organizeData()
+        d3.csv("FINAL SET - Sheet1.csv").then(
+            function(data)
+            {
+                //Begin by organizing the inputted csv data in a menaningful way, somehow
+                var masterArray = organizeData(data)
+                console.log(masterArray)
         
-        makePathway(masterArray)
-        makeRegulationList(masterArray)
-        makePPIBase(masterArray)
+                makePathway(masterArray)
+                makeRegulationList(masterArray)
+                makePPIBase(masterArray)
+            })
+
     })
 
     /*
@@ -26,11 +33,7 @@ const Home = () => {
 
         //Take in an manipulate the csv data to organize a ton of protein objects
         //Each protein object will be pushed into the temporary array arr
-        d3.csv("FINAL SET - Sheet1.csv").then(
-            function(data)
-            {
 
-            })
 
         return arr;
     }
@@ -53,7 +56,7 @@ const Home = () => {
           .attr("fill", "black")
 
 
-        function
+        
     }
 
     function makeRegulationList(masterArray)
