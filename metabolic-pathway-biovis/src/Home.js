@@ -49,12 +49,11 @@ const Home = () => {
               regulation: data[i]["Corresponding reg"],
               branch: data[i]["Branch point"],              
               PPINetwork: data[i]["PPI network"],
+              PPIInteraction: data[i]["PPI network interacrtion type"]
           }
 
           arr.push(proteinObject)
         }
-
-        return arr;
 
         return arr;
     }
