@@ -33,7 +33,28 @@ const Home = () => {
 
         //Take in an manipulate the csv data to organize a ton of protein objects
         //Each protein object will be pushed into the temporary array arr
+        let arr = []
 
+        for(var i = 0; i < data.length; i++)
+        { 
+          var proteinObject = 
+          {
+              name: data[i]["Protein Name"],
+              id: data[i]["Protein ID"],
+              pathway: data[i]["Pathway"],
+              connections: data[i]["List of Proteins Connected To"],
+              molecules: data[i]["Molecules Connected To"],
+              pathwayConnection: data[i]["Other Pathways Connected To"],
+              TF:data[i]["List of TF Reg"],
+              regulation: data[i]["Corresponding reg"],
+              branch: data[i]["Branch point"],              
+              PPINetwork: data[i]["PPI network"],
+          }
+
+          arr.push(proteinObject)
+        }
+
+        return arr;
 
         return arr;
     }
