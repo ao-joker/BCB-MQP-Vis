@@ -12,11 +12,10 @@ const Home = () => {
         d3.csv(data).then(
             function(data)
             {
-                console.log("I got 1")
                 //Begin by organizing the inputted csv data in a menaningful way, somehow
-                console.log(data)
+                //console.log(data)
                 var masterArray = organizeData(data)
-                console.log(masterArray)
+                //console.log(masterArray)
         
                 makePathway(masterArray)
                 makeRegulationList(masterArray)
@@ -70,6 +69,7 @@ const Home = () => {
     */
     function makePathway(masterArray)
     {
+        //Background for the svg
         d3.select("#Pathway")
         .append("rect")
           .attr("x", 0)
@@ -79,6 +79,56 @@ const Home = () => {
           .attr("stroke", "black")
           .attr("fill", "black")
 
+            //Radio buttons
+            //Create the listed buttons to view the following: protein-protein ; protein-molecule-protein
+            //Inspiration and coding help came from this source: http://www.nikhil-nathwani.com/blog/posts/radio/radio.html
+            var radioButtons = d3.select("#Pathway")
+                                 .append("g")
+                                 .attr("id", "radioButtons") 
+
+            //A set of labels for the buttons
+            var labels= ["Protein-Protein", "Protein-Molecule-Protein"];
+
+            //Create the group of rectangles and text that will compose these buttons
+            var radioButtonGroups= radioButtons.selectAll("g.button")
+                                               .data(labels)
+                                               .enter()
+                                               .append("g")
+                                               .attr("class", "button")
+                                               .style("cursor", "pointer")
+
+            var rbWidth= 200; //button width
+            var rbHeight= 30; //button height
+            var rbSpace= 30; //space between buttons
+            var x0= 20; //x offset
+            var y0= 10; //y offset
+
+            //adding a rect to each button group
+            radioButtonGroups.append("rect")
+                             .attr("class", "buttonRect")
+                             .attr("width", rbWidth)
+                             .attr("height", rbHeight)
+                             .attr("x",function(d,i) 
+                                 {
+                                     return x0 + (rbWidth + rbSpace) * i;
+                                 })
+                             .attr("y", y0)
+                             .attr("rx", 5) //Give nice rounded corners
+                             .attr("ry", 5) //Give nice rounded corners
+                             .attr("fill", "red")
+
+            //adding text to each button group, centered within the button rect
+            radioButtonGroups.append("text")
+                             .attr("class", "buttonText")
+                             .attr("x",function(d, i) 
+                                  {
+                                    return x0 + (rbWidth + rbSpace) * i + rbWidth / 2;
+                                  })
+                             .attr("y", y0 + (rbHeight / 2))
+                             .attr("text-anchor", "middle")
+                             .attr("dominant-baseline", "central")
+                             .attr("fill", "white")
+                             .text(function(d) {return d;})
 
         
     }
