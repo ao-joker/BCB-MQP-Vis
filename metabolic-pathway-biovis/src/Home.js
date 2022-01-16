@@ -11,7 +11,9 @@ const Home = () => {
         d3.csv("FINAL SET - Sheet1.csv").then(
             function(data)
             {
+                console.log("I got 1")
                 //Begin by organizing the inputted csv data in a menaningful way, somehow
+                console.log(data)
                 var masterArray = organizeData(data)
                 console.log(masterArray)
         
@@ -26,17 +28,18 @@ const Home = () => {
         Here is the function that organizes all the data from the inputted csv
 
     */
-    function organizeData()
+    function organizeData(data)
     {
         //Declare a temporary array that is able to hold the contents to be passed to the masterArray
         let arr = []
 
         //Take in an manipulate the csv data to organize a ton of protein objects
         //Each protein object will be pushed into the temporary array arr
-        let arr = []
 
         for(var i = 0; i < data.length; i++)
         { 
+
+            console.log("I got 2")
           var proteinObject = 
           {
               name: data[i]["Protein Name"],
