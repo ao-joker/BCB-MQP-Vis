@@ -9,7 +9,7 @@ const Home = () => {
     useEffect(() => {
         
         //Make the final set of organized data
-        csv("tester1.csv").then(
+        csv("FINAL-Set.csv").then(
             function(data)
             {
                 console.log("I got 1")
