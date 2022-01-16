@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
+import { csv } from 'd3';
 
 const Home = () => {
     //YOU BEST FIX THOSE SVGs! THE SIZES AND LOCATION NEED DRASTIC ADJUSTING
@@ -8,7 +9,7 @@ const Home = () => {
     useEffect(() => {
         
         //Make the final set of organized data
-        d3.csv("FINAL SET - Sheet1.csv").then(
+        csv("FINAL-SET.csv").then(
             function(data)
             {
                 console.log("I got 1")
