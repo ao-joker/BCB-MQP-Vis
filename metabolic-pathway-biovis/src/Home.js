@@ -107,7 +107,11 @@ const Home = () => {
                                                .append("g")
                                                .attr("class", "button")
                                                .style("cursor", "pointer")
-                                               
+                                               .on("click", function(d)
+                                                  {
+                                                     updateRadioButtons(d3.select(this), d3.select(this.parentNode))
+                                                  })
+
             //adding a rect to each button group
             radioButtonGroups.append("rect")
                              .attr("class", "buttonRect")
@@ -126,6 +130,7 @@ const Home = () => {
                              .attr("y", y0)
                              .attr("rx", 5) //Give nice rounded corners
                              .attr("ry", 5) //Give nice rounded corners
+                             .attr("stroke", "black")
                              .attr("fill", "red")
 
             //adding text to each button group, centered within the button rect
@@ -142,23 +147,41 @@ const Home = () => {
                              .text(function(d) {return d;})
 
 
+
             //A function to all the radio buttons to update color for the selected radio button 
             //and to inform which model of the pathway should be shown
-            function updateRadioButton()
+            function updateRadioButtons(button, parent)
             {
+                parent.selectAll("rect")
+                      .attr("fill", "red")
+                      .attr("stroke", "black")
+    
+                button.select("rect")
+                      .attr("fill", "blue")
+                      .attr("stroke", "white")
 
+                
             }
 
+            //A dropdown menu so that the user can choose the pathway of choice
+
+        
         //Actually making the pathway
-        function drawPathway(masterArray)
+        function drawPathway(masterArray, pathwayType, selectedPathway)
         {
 
         }
 
         //Redraw function with radio button inputs
-        function redrawPathway(masterArray, )
+        function redrawPathwayLayout(masterArray, pathwayType)
         {
-            drawPathway(masterArray)
+            drawPathway(masterArray, pathwayType, selectedPathway)
+        }
+
+        //Redraw function with dropdown inputs
+        function redrawPathwayType(masterArray, selectedPathway)
+        {
+
         }
     }
 
