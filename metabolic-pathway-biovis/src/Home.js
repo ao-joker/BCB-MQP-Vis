@@ -38,8 +38,6 @@ const Home = () => {
 
         for(var i = 0; i < data.length; i++)
         { 
-
-            console.log("I got 2")
           var proteinObject = 
           {
               name: data[i]["Protein Name"],
@@ -69,6 +67,22 @@ const Home = () => {
     */
     function makePathway(masterArray)
     {
+        /*  Necessary variabels for this function and other nested functions
+            with the intended use and function noted according to the <variable></variable>   */
+
+        //Radio button creating
+        var labels= ["Protein-Protein", "Protein-Molecule-Protein"] //A set of labels for the buttons. All other layouts should be pused onto this list!
+        var layoutType = ["Protein-Protein", "Protein-Molecule-Protein"] //The layouts that are applicable. Variable to store names as strings for id attribute creation
+        var rbWidth = 200 //button width
+        var rbHeight = 30 //button height
+        var rbSpace = 30 //space between buttons
+        var x0 = 20 //x offset
+        var y0 = 10 //y offset
+
+        //Pathway creation and update
+        var pathwayType = "Glycolysis/Gluconeogenesis"
+        var selectedPathway = "Protein-Protein"
+
         //Background for the svg
         d3.select("#Pathway")
         .append("rect")
@@ -86,26 +100,23 @@ const Home = () => {
                                  .append("g")
                                  .attr("id", "radioButtons") 
 
-            //A set of labels for the buttons
-            var labels= ["Protein-Protein", "Protein-Molecule-Protein"];
-
             //Create the group of rectangles and text that will compose these buttons
-            var radioButtonGroups= radioButtons.selectAll("g.button")
+            var radioButtonGroups = radioButtons.selectAll("g.button")
                                                .data(labels)
                                                .enter()
                                                .append("g")
                                                .attr("class", "button")
                                                .style("cursor", "pointer")
-
-            var rbWidth= 200; //button width
-            var rbHeight= 30; //button height
-            var rbSpace= 30; //space between buttons
-            var x0= 20; //x offset
-            var y0= 10; //y offset
-
+                                               
             //adding a rect to each button group
             radioButtonGroups.append("rect")
                              .attr("class", "buttonRect")
+                             .attr("id", function(d, i)
+                                  {
+                                     console.log(layoutType[i])
+                                     console.log(i)
+                                     return layoutType[i];
+                                  })
                              .attr("width", rbWidth)
                              .attr("height", rbHeight)
                              .attr("x",function(d,i) 
@@ -130,7 +141,25 @@ const Home = () => {
                              .attr("fill", "white")
                              .text(function(d) {return d;})
 
-        
+
+            //A function to all the radio buttons to update color for the selected radio button 
+            //and to inform which model of the pathway should be shown
+            function updateRadioButton()
+            {
+
+            }
+
+        //Actually making the pathway
+        function drawPathway(masterArray)
+        {
+
+        }
+
+        //Redraw function with radio button inputs
+        function redrawPathway(masterArray, )
+        {
+            drawPathway(masterArray)
+        }
     }
 
     function makeRegulationList(masterArray)
