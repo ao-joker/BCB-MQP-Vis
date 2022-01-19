@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
 import data from "./FINAL-Set.csv";
+import { select } from "d3";
 
 const Home = () => {
     //YOU BEST FIX THOSE SVGs! THE SIZES AND LOCATION NEED DRASTIC ADJUSTING
@@ -117,8 +118,8 @@ const Home = () => {
         var y0 = 10 //y offset
 
         //Pathway creation and update
-        var pathwayType = "Glycolysis/Gluconeogenesis"
-        var selectedPathway = "Protein-Protein"
+        var selectedPathway = "Glycolysis/Gluconeogenesis"
+        var pathwayType = "Protein-Protein"
 
         //Background for the svg
         d3.select("#Pathway")
@@ -203,18 +204,35 @@ const Home = () => {
             //A dropdown menu so that the user can choose the pathway of choice
             //Get all the potential values for pathways in the csv
             var pathwayDropDownValues = getAllPathwayOptions(masterArray)
-
             console.log(pathwayDropDownValues)
+            console.log(selectedPathway)
 
             //Create the actual dropdown menu
-            d3.select("#Pathway")
-              .append("select")
-              .selectAll("option")
-              .data(pathwayDropDownValues)
+            d3.select("#selectButton")
+              .selectAll('myOptions')
+     	      .data(pathwayDropDownValues)
               .enter()
-              .append("option")
-              .attr("value", function(d){return d;})
-              .text(function(d){return d;})
+    	      .append('option')
+              .text(function(d){return d;}) // text showed in the menu
+              .attr("value", function(d){return d;}) // corresponding value returned by the button
+              
+            d3.select("#selectButton")
+              .on("change", function(event, d)
+                 {
+                    selectedPathway = d3.select(this).property("value")
+                    console.log(selectedPathway) 
+                    
+                    drawPathway(selectedPathway)
+                 })
+
+            /*d3.select("#Pathway")
+                             .append("g")
+                             .attr("id", "dropdown menu")
+                             .append("option")
+                             .data(pathwayDropDownValues)
+                             .enter()
+                             .attr("value", function(d){return d;})
+                             .text(function(d){return d;})
               /*.append("select")
               .selectAll("option")
               .data(pathwayDropDownValues)
@@ -235,14 +253,13 @@ const Home = () => {
 
                 for(var i = 0; i < masterArray.length; i++)
                 {
-                    if(!(arr.includes(masterArray[i]["pathway"])))
-                    {
-                        if(masterArray[i]["pathway"].filter(s => s.indexOf(',')) != - 1)
-                        {
-                            arr.push(masterArray[i]["pathway"])
-                        }
-
-                    }
+                    masterArray[i]["pathway"].forEach(function(element)
+                                                     {
+                                                        if(!(arr.includes(element)))
+                                                        {
+                                                            arr.push(element)
+                                                        }
+                                                     })
                 }
 
                 return arr;
@@ -296,6 +313,7 @@ const Home = () => {
     return(
         <div className="home">
             <h2>The Pathway Itself!</h2>
+            <select id="selectButton"></select>
             <svg id="Pathway" width="1000" height="1000"></svg>
             <svg id="Regulation" width="500" height="500"></svg>
             <svg id="PPI" width="500" height="500"></svg>
