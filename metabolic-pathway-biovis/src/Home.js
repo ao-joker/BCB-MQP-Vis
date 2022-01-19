@@ -42,7 +42,7 @@ const Home = () => {
           {
               name: data[i]["Protein Name"],
               id: data[i]["Protein ID"],
-              pathway: data[i]["Pathway"],
+              pathway: getPathwayList(data[i]["Pathway"]),
               connections: data[i]["List of Proteins Connected To"],
               molecules: data[i]["Molecules Connected To"],
               pathwayConnection: data[i]["Other Pathways Connected To"],
@@ -57,6 +57,43 @@ const Home = () => {
         }
 
         return arr;
+
+        //Makes a list of all pathways a protein is a part of
+        function getPathwayList(pathways)
+        {
+            //A temporary array that will hold the pathways to convert into a string
+            let arr = []
+
+            //A variable to hold onto the last index of the string
+            let lastIndex = 0
+
+            //First, check if the protein is found in multiple pathways. If it is, do work to splice them out
+            //Else, just push the whole string onto the array and return it
+            if(pathways.includes(','))
+            {
+                //Iterate through the string until you encounter a ',' and slice until you reach the end of the string
+                for(var i = 0; i < pathways.length; i++)
+                {
+                    if(pathways[i] === ',')
+                    {
+                        //Now separate the string from the last knonw index to the column
+                        let separateString = pathways.slice(lastIndex, i)
+
+                        //Add it to the array and up the previous index to the next index after the comma
+                        arr.push(separateString)
+                        lastIndex = i + 1
+                    }
+                }
+
+                return arr;
+            }
+            else
+            {
+                arr.push(pathways)
+                return arr;
+            }
+
+        }
     }
 
     /*
@@ -164,7 +201,52 @@ const Home = () => {
             }
 
             //A dropdown menu so that the user can choose the pathway of choice
+            //Get all the potential values for pathways in the csv
+            var pathwayDropDownValues = getAllPathwayOptions(masterArray)
 
+            console.log(pathwayDropDownValues)
+
+            //Create the actual dropdown menu
+            d3.select("#Pathway")
+              .append("select")
+              .selectAll("option")
+              .data(pathwayDropDownValues)
+              .enter()
+              .append("option")
+              .attr("value", function(d){return d;})
+              .text(function(d){return d;})
+              /*.append("select")
+              .selectAll("option")
+              .data(pathwayDropDownValues)
+              .enter()
+              .append('option')
+              .style("left", "10px")
+              .style("top", "5px")
+              .text(function (d) {return d;})
+              .attr("value", function (d) {return d;}) */
+              //.on("change", updatePathwayLayout(masterArray, d3.select(this).attr("value")))
+      
+
+            //A function that inputs all the values for potentially viewed vis
+            function getAllPathwayOptions(masterArray)
+            {
+                //Temporary array used to hold the different pathways
+                let arr = []
+
+                for(var i = 0; i < masterArray.length; i++)
+                {
+                    if(!(arr.includes(masterArray[i]["pathway"])))
+                    {
+                        if(masterArray[i]["pathway"].filter(s => s.indexOf(',')) != - 1)
+                        {
+                            arr.push(masterArray[i]["pathway"])
+                        }
+
+                    }
+                }
+
+                return arr;
+            }
         
         //Actually making the pathway
         function drawPathway(masterArray, pathwayType, selectedPathway)
@@ -173,7 +255,7 @@ const Home = () => {
         }
 
         //Redraw function with radio button inputs
-        function redrawPathwayLayout(masterArray, pathwayType)
+        function updatePathwayLayout(masterArray, pathwayType)
         {
             drawPathway(masterArray, pathwayType, selectedPathway)
         }
