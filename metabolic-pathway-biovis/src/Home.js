@@ -3,7 +3,8 @@ import * as d3 from "d3";
 import data from "./FINAL-Set.csv";
 import { select } from "d3";
 
-const Home = () => {
+const Home = () => 
+{
     //YOU BEST FIX THOSE SVGs! THE SIZES AND LOCATION NEED DRASTIC ADJUSTING
     
     //Here, I will make a call to all the svg related functions
@@ -16,7 +17,7 @@ const Home = () => {
                 //Begin by organizing the inputted csv data in a menaningful way, somehow
                 //console.log(data)
                 var masterArray = organizeData(data)
-                //console.log(masterArray)
+                console.log(masterArray)
         
                 makePathway(masterArray)
                 makeRegulationList(masterArray)
@@ -118,7 +119,7 @@ const Home = () => {
         var y0 = 10 //y offset
 
         //Pathway creation and update
-        var selectedPathway = "Glycolysis/Gluconeogenesis"
+        var selectedPathway = "Glycolysis/Gluconeogensis"
         var pathwayType = "Protein-Protein"
 
         //Background for the svg
@@ -266,9 +267,112 @@ const Home = () => {
             }
         
         //Actually making the pathway
+        drawPathway(masterArray, pathwayType, selectedPathway)
+
         function drawPathway(masterArray, pathwayType, selectedPathway)
         {
+            //Call functions that assign links and nodes specific to the pathway selected
+            console.log(selectedPathway)
+            var nodesP = assignNodes(masterArray, pathwayType, selectedPathway)
+            var linksP = assignLinks(masterArray, selectedPathway)
+            console.log(nodesP)
+            console.log(linksP)
 
+            //Create the pathway force-directed network
+
+            //Create the list of nodes that fit the pathway typein question 
+            function assignNodes(masterArray, pathwayType, selectedPathway)
+            {                
+                //Here is a temporary array to hold the nodes for the pathway
+                let arr = []
+
+                //Determine which layout organization to proceed with: protein-protein vs protein-molecule-protein
+                if(pathwayType === "Protein-Protein")
+                {
+                    for(var i = 0; i < masterArray.length; i++)
+                    {
+                        //console.log(masterArray[i]["pathway"])
+                        if(masterArray[i]["pathway"].includes(selectedPathway))
+                        {
+                            //console.log(masterArray[i]["pathway"])
+                            var pathwayObject = 
+                            {
+                                name: masterArray[i]["name"]
+                            }
+        
+                            arr.push(pathwayObject)
+                        }
+                    }
+                }
+                else
+                {
+
+                }
+
+                return arr;
+            }
+
+            function assignLinks(masterArray, selectedPathway)
+            {
+                //Temporary arrays
+                //  - The first will hold source and target objects of the final map 
+                //  - The second will hold each set of connections temporarily for each protein with >1 connection
+                //  - The third will hold the last index between commas for slicing to ensure protein names are added properly to the final links array
+                let arr = []
+                let arrHold = []
+                let lastIndex = 0
+          
+                for(var i = 0; i < masterArray.length; i++)
+                {
+                    if(masterArray[i]["pathway"].includes(selectedPathway))
+                    {
+                        let str = masterArray[i]["connections"]
+                        console.log(str)
+
+                        switch(str.length)
+                        {
+                            case 0:
+                                break;
+
+                            case 1:
+                                var pathwayObject = 
+                                {
+                                    source: i,
+                                    target: masterArray.findIndex(object => {return object.name === str})
+                                }
+                                arr.push(pathwayObject)
+                                break;
+
+                            default:
+                                //console.log("Default")
+                                for(var j = 0; j < str.length; j++)
+                                {
+                                    if(str[j] === ',' || j == str.length - 1)
+                                    {
+                                        //Now separate the string from the last knonw index to the column
+                                        let separateString = str.slice(lastIndex, j)
+                                        console.log(separateString)
+
+                                        //Add it to the array and up the previous index to the next index after the comma
+                                        var pathwayObject = 
+                                        {
+                                          source: i,
+                                          target: masterArray.findIndex(object => {return object.name === separateString})
+                                        }
+                                        lastIndex = j + 1
+
+                                        arr.push(pathwayObject)
+                                    }
+                                }
+                                //Need to reset last index for next iteration
+                                lastIndex = 0
+                
+                        }
+                    }
+                }
+                arrHold = []
+                return arr;
+            }
         }
 
         //Redraw function with radio button inputs
