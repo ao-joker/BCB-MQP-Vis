@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import data from "./FINAL-Set.csv";
+import data from "./FINAL-SET.csv";
 import { select } from "d3";
 
 const Home = () => 
@@ -74,9 +74,9 @@ const Home = () =>
             if(pathways.includes(','))
             {
                 //Iterate through the string until you encounter a ',' and slice until you reach the end of the string
-                for(var i = 0; i < pathways.length; i++)
+                for(var i = 0; i <= pathways.length; i++)
                 {
-                    if(pathways[i] === ',')
+                    if(pathways[i] === ','|| i == pathways.length)
                     {
                         //Now separate the string from the last knonw index to the column
                         let separateString = pathways.slice(lastIndex, i)
