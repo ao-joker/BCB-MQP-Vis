@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
 import data from "./FINAL-SET.csv";
-import { select } from "d3";
 
 const Home = () => 
 {
@@ -76,7 +75,7 @@ const Home = () =>
                 //Iterate through the string until you encounter a ',' and slice until you reach the end of the string
                 for(var i = 0; i <= pathways.length; i++)
                 {
-                    if(pathways[i] === ','|| i == pathways.length)
+                    if(pathways[i] === ','|| i === pathways.length)
                     {
                         //Now separate the string from the last knonw index to the column
                         let separateString = pathways.slice(lastIndex, i)
@@ -316,10 +315,8 @@ const Home = () =>
             {
                 //Temporary arrays
                 //  - The first will hold source and target objects of the final map 
-                //  - The second will hold each set of connections temporarily for each protein with >1 connection
-                //  - The third will hold the last index between commas for slicing to ensure protein names are added properly to the final links array
+                //  - The second will hold the last index between commas for slicing to ensure protein names are added properly to the final links array
                 let arr = []
-                let arrHold = []
                 let lastIndex = 0
           
                 for(var i = 0; i < masterArray.length; i++)
@@ -347,7 +344,7 @@ const Home = () =>
                                 //console.log("Default")
                                 for(var j = 0; j < str.length; j++)
                                 {
-                                    if(str[j] === ',' || j == str.length - 1)
+                                    if(str[j] === ',' || j === str.length)
                                     {
                                         //Now separate the string from the last knonw index to the column
                                         let separateString = str.slice(lastIndex, j)
@@ -370,7 +367,6 @@ const Home = () =>
                         }
                     }
                 }
-                arrHold = []
                 return arr;
             }
         }
