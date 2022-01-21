@@ -329,6 +329,7 @@ const Home = () =>
                         switch(str.length)
                         {
                             case 0:
+                                arr.push("")
                                 break;
 
                             case 1:
@@ -342,7 +343,7 @@ const Home = () =>
 
                             default:
                                 //console.log("Default")
-                                for(var j = 0; j < str.length; j++)
+                                for(var j = 0; j <= str.length; j++)
                                 {
                                     if(str[j] === ',' || j === str.length)
                                     {
