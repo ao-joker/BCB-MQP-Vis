@@ -43,15 +43,15 @@ const Home = () =>
           {
               name: data[i]["Protein Name"],
               id: data[i]["Protein ID"],
-              pathway: getPathwayList(data[i]["Pathway"]),
+              pathway: commaSeparatedStringToList(data[i]["Pathway"]),
               connections: data[i]["List of Proteins Connected To"],
               molecules: data[i]["Molecules Connected To"],
               pathwayConnection: data[i]["Other Pathways Connected To"],
               TF:data[i]["List of TF Reg"],
               regulation: data[i]["Corresponding reg"],
               branch: data[i]["Branch point"],              
-              PPINetwork: data[i]["PPI network"],
-              PPIInteraction: data[i]["PPI network interacrtion type"]
+              PPINetwork: commaSeparatedStringToList(data[i]["PPI network"]),
+              PPIInteraction: commaSeparatedStringToList(data[i]["PPI network interaction type"])
           }
 
           arr.push(proteinObject)
@@ -60,7 +60,7 @@ const Home = () =>
         return arr;
 
         //Makes a list of all pathways a protein is a part of
-        function getPathwayList(pathways)
+        function commaSeparatedStringToList(longString)
         {
             //A temporary array that will hold the pathways to convert into a string
             let arr = []
@@ -70,15 +70,15 @@ const Home = () =>
 
             //First, check if the protein is found in multiple pathways. If it is, do work to splice them out
             //Else, just push the whole string onto the array and return it
-            if(pathways.includes(','))
+            if(longString.includes(','))
             {
                 //Iterate through the string until you encounter a ',' and slice until you reach the end of the string
-                for(var i = 0; i <= pathways.length; i++)
+                for(var i = 0; i <= longString.length; i++)
                 {
-                    if(pathways[i] === ','|| i === pathways.length)
+                    if(longString[i] === ','|| i === longString.length)
                     {
                         //Now separate the string from the last knonw index to the column
-                        let separateString = pathways.slice(lastIndex, i)
+                        let separateString = longString.slice(lastIndex, i)
 
                         //Add it to the array and up the previous index to the next index after the comma
                         arr.push(separateString)
@@ -90,7 +90,7 @@ const Home = () =>
             }
             else
             {
-                arr.push(pathways)
+                arr.push(longString)
                 return arr;
             }
 
