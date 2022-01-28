@@ -155,8 +155,8 @@ const Home = () =>
                              .attr("class", "buttonRect")
                              .attr("id", function(d, i)
                                   {
-                                     console.log(layoutType[i])
-                                     console.log(i)
+                                     //console.log(layoutType[i])
+                                     //console.log(i)
                                      return layoutType[i];
                                   })
                              .attr("width", rbWidth)
@@ -204,7 +204,7 @@ const Home = () =>
             //A dropdown menu so that the user can choose the pathway of choice
             //Get all the potential values for pathways in the csv
             var pathwayDropDownValues = getAllPathwayOptions(masterArray)
-            console.log(pathwayDropDownValues)
+            //console.log(pathwayDropDownValues)
             console.log(selectedPathway)
 
             //Create the actual dropdown menu
@@ -271,13 +271,70 @@ const Home = () =>
         function drawPathway(masterArray, pathwayType, selectedPathway)
         {
             //Call functions that assign links and nodes specific to the pathway selected
-            console.log(selectedPathway)
+            //console.log(selectedPathway)
             var nodesP = assignNodes(masterArray, pathwayType, selectedPathway)
             var linksP = assignLinks(masterArray, selectedPathway)
-            console.log(nodesP)
-            console.log(linksP)
+            //console.log(nodesP)
+            //console.log(linksP)
 
             //Create the pathway force-directed network
+            var width = Number(d3.select("#Pathway").style("width").replace(/px$/, '')) + 50
+            var height = Number(d3.select("#Pathway").style("height").replace(/px$/, ''))
+
+            var pathway =  d3.forceSimulation(nodesP)
+                       .force("charge", d3.forceManyBody().strength(-200))       //Strength of the attraction/repel
+                       .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
+                       .force("link", d3.forceLink().links(linksP))
+                       .force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
+                       .on("tick", ticked)    //Draws the objects
+
+            function ticked()
+            {
+              updateLinks()
+              updateNodes()
+            }
+
+            function updateLinks()
+            {
+                var u = d3.select("#Pathway")
+                .append("g")
+                //.select(".links")
+                .selectAll("line")
+                .data(linksP)
+                .join("line")
+                .attr("x1", function(d){return d.source.x})
+                .attr("y1", function(d){return d.source.y})
+                .attr("x2", function(d){return d.target.x})
+                .attr("y2", function(d){return d.target.y})
+                .attr("stroke", "white")
+                //.attr('marker-end', 'url(#arrow)')
+            }   
+
+            function updateNodes()
+            {
+                var u = d3.select("#Pathway")
+                .append("g")
+                //.select(".nodes")
+                .selectAll("text")
+                .data(nodesP)
+                .join("circle")
+                .attr("cx", function(d){return d.x})
+                .attr("cy", function(d){return d.y})
+                .attr("r", function(d){return 10})
+                /*.text(function(d) {return d.name})
+                .attr("x", function(d){return d.x})
+                .attr("y", function(d){return d.y})
+                .attr("dy", function(d){return 10})
+                .attr("font-weight", 30)
+                .style("font-size", "15px")*/
+                .style("fill", "white")
+                .attr("id", function(d){return d.name})
+                .on("click", function()
+                             {
+                               console.log(this.id)
+                                //makePPI(this.id)
+                             })
+            }
 
             //Create the list of nodes that fit the pathway typein question 
             function assignNodes(masterArray, pathwayType, selectedPathway)
@@ -324,7 +381,7 @@ const Home = () =>
                     if(masterArray[i]["pathway"].includes(selectedPathway))
                     {
                         let str = masterArray[i]["connections"]
-                        console.log(str)
+                        //console.log(str)
 
                         switch(str.length)
                         {
@@ -349,7 +406,7 @@ const Home = () =>
                                     {
                                         //Now separate the string from the last knonw index to the column
                                         let separateString = str.slice(lastIndex, j)
-                                        console.log(separateString)
+                                        //console.log(separateString)
 
                                         //Add it to the array and up the previous index to the next index after the comma
                                         var pathwayObject = 
