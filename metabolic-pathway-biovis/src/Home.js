@@ -297,7 +297,7 @@ const Home = () =>
             function updateLinks()
             {
                 var u = d3.select("#Pathway")
-                .append("g")
+                //.append("g")
                 //.select(".links")
                 .selectAll("line")
                 .data(linksP)
@@ -313,20 +313,20 @@ const Home = () =>
             function updateNodes()
             {
                 var u = d3.select("#Pathway")
-                .append("g")
+                //.append("g")
                 //.select(".nodes")
                 .selectAll("text")
                 .data(nodesP)
-                .join("circle")
-                .attr("cx", function(d){return d.x})
+                .join("text")
+                /*.attr("cx", function(d){return d.x})
                 .attr("cy", function(d){return d.y})
-                .attr("r", function(d){return 10})
-                /*.text(function(d) {return d.name})
+                .attr("r", function(d){return 10})*/
+                .text(function(d) {return d.name})
                 .attr("x", function(d){return d.x})
                 .attr("y", function(d){return d.y})
                 .attr("dy", function(d){return 10})
                 .attr("font-weight", 30)
-                .style("font-size", "15px")*/
+                .style("font-size", "15px")
                 .style("fill", "white")
                 .attr("id", function(d){return d.name})
                 .on("click", function()
@@ -466,6 +466,114 @@ const Home = () =>
           .attr("height", 1000)
           .attr("stroke", "red")
           .attr("fill", "red")
+    }
+
+    //Here, we will actually contrusct the PPI
+    function createPPI(proteinInterest)
+    {
+        var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
+        var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
+    
+        var dict = { "A": [],
+                    "B": ["C"],
+                    "C": ["B"],
+                    "D": ["F", "J"],
+                    "E": ["J"],
+                    "F": ["D"],
+                    "G": [],
+                    "H": [],
+                    "J": ["D", "E", "I"],
+                    "I": ["J"]}
+
+        var links = []
+        var updatedLinks = []
+        var updatedNodes = []
+    
+        //Select proper PPI of interest
+        let i = 1
+
+        for(let k in dict)
+        {
+        if(k === proteinInterest)
+        {
+            updatedNodes.push({name: k})
+            console.log(dict[k])
+
+            dict[k].forEach(element => updatedNodes.push({name: element}))
+            dict[k].forEach(element => updatedLinks.push({source: 0, target: (dict[k].indexOf(element) + 1)}))
+            /*for(let item in dict[k])
+            {
+
+            console.log(item)
+            updatedNodes.push({name: item})
+            updatedLinks.push({source: 0, target: i})
+            }*/
+
+            break;
+        }
+        }
+
+        console.log(updatedLinks)
+        console.log(updatedNodes)
+
+        var u;
+        var simulation = d3.forceSimulation(updatedNodes)
+                        .force("charge", d3.forceManyBody().strength(-500))       //Strength of the attraction/repel
+                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
+                        .force("link", d3.forceLink().links(updatedLinks))
+                        //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
+                        .on("tick", ticked)    //Draws the objects
+        function ticked()
+        {
+            /*var u = d3.select("#PPI")
+                    .selectAll("circle")
+                    .data(nodes)
+                    .join("circle")
+                    .attr("r", function(d) {return d.radius})
+                    .attr("cx", function(d) {return d.x})
+                    .attr("cy", function(d) {console.log(d); return d.y})
+                    .attr("fill", "green")
+                    .attr("stroke", "black")*/
+
+            updateLinks()
+            updateNodes()
+        }
+
+        function updateNodes()
+        {
+            u = d3.select("#PPI")
+                    //.select(".nodes")
+                    .selectAll("text")
+                    .data(updatedNodes)
+                    .join("text")
+                    .text(function(d) {return d.name})
+                    .attr("x", function(d){return d.x})
+                    .attr("y", function(d){return d.y})
+                    .attr("dy", function(d){return 5})
+                    .attr("id", function(d){return d.name})
+                    .attr("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
+                    .style("font-size", "30px")
+                    /*.attr("r", function(d) {return d.radius})
+                    .attr("cx", function(d) {return d.x})
+                    .attr("cy", function(d) {console.log(d); return d.y})
+                    .attr("fill", "green")
+                    .attr("stroke", "black")*/
+
+        }
+
+        function updateLinks()
+        {
+            u = d3.select("#PPI")
+                    //.select(".links")
+                    .selectAll("line")
+                    .data(updatedLinks)
+                    .join("line")
+                    .attr("x1", function(d){return d.source.x})
+                    .attr("y1", function(d){return d.source.y})
+                    .attr("x2", function(d){return d.target.x})
+                    .attr("y2", function(d){return d.target.y})
+                    .attr("stroke", "black")
+        }
     }
 
     return(
