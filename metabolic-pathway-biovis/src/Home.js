@@ -281,6 +281,7 @@ const Home = () =>
             var width = Number(d3.select("#Pathway").style("width").replace(/px$/, '')) + 50
             var height = Number(d3.select("#Pathway").style("height").replace(/px$/, ''))
 
+            var u;
             var pathway =  d3.forceSimulation(nodesP)
                        .force("charge", d3.forceManyBody().strength(-200))       //Strength of the attraction/repel
                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
@@ -296,7 +297,7 @@ const Home = () =>
 
             function updateLinks()
             {
-                var u = d3.select("#Pathway")
+                u = d3.select("#Pathway")
                 //.append("g")
                 //.select(".links")
                 .selectAll("line")
@@ -312,7 +313,7 @@ const Home = () =>
 
             function updateNodes()
             {
-                var u = d3.select("#Pathway")
+                u = d3.select("#Pathway")
                 //.append("g")
                 //.select(".nodes")
                 .selectAll("text")
