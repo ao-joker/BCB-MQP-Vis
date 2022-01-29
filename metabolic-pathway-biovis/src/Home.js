@@ -332,6 +332,7 @@ const Home = () =>
                 .attr("id", function(d){return d.name})
                 .on("click", function()
                              {
+                                console.log(this.id)
                                 createPPI(this.id, masterArray)
                              })
             }
@@ -474,58 +475,70 @@ const Home = () =>
     {
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
-    
-        //Organize the data into a dictionary
-        var dict = { "A": [],
-        "B": ["C"],
-        "C": ["B"],
-        "D": ["F", "J"],
-        "E": ["J"],
-        "F": ["D"],
-        "G": [],
-        "H": [],
-        "J": ["D", "E", "I"],
-        "I": ["J"]}
-        //var PPIDict = organizePPIDict(masterArray)
-
-        var links = []
         var updatedLinks = []
         var updatedNodes = []
-    
-        //Select proper PPI of interest
-        let i = 1
 
-        for(let k in dict)
-        {
-        if(k === proteinInterest)
-        {
-            updatedNodes.push({name: k})
-            console.log(dict[k])
+        //Organize the data into a dictionary
+        //Select proper PPI of interest by going through the masterArray and finding the right protein to make the nodes and links array
+        let breakLoop = true; //Will tell when to end the loop when the protein is found
+        var i = 0;  //Variable to serve as a counter as it iterates
 
-            dict[k].forEach(element => updatedNodes.push({name: element}))
-            dict[k].forEach(element => updatedLinks.push({source: 0, target: (dict[k].indexOf(element) + 1)}))
-            /*for(let item in dict[k])
+        while(breakLoop)
+        {
+            if(masterArray[i]["name"] === proteinInterest)
             {
+                //Add all the nodes
+                createUpdatedNodes(masterArray[i])
 
-            console.log(item)
-            updatedNodes.push({name: item})
-            updatedLinks.push({source: 0, target: i})
-            }*/
+                //Add all the links
+                createUpdatedLinks(masterArray[i])
 
-            break;
+                //Break the loop here
+                breakLoop = false;
+
+                function createUpdatedNodes(protein)
+                {
+                    //First, add the protein that we like to look at
+                    updatedNodes.push({name: protein["name"], radius: 20})
+                    
+                    //Then, add all the other proteins that it interacts with
+                    protein["PPINetwork"].forEach(function(element)
+                                                {
+                                                    updatedNodes.push({name: element, radius: 20})
+                                                }) 
+                }
+
+                function createUpdatedLinks(protein)
+                {
+                    //Add the connection to the first node (protein of interest) to the rest of them
+                    updatedNodes.forEach(function(element)
+                                        {
+                                            if(element === proteinInterest)
+                                            {}
+                                            else
+                                            {
+                                                updatedLinks.push({source: 0, target: updatedNodes.indexOf(element)})
+                                            }
+
+                                        })
+                }
+            }
+
+            i += 1
         }
-        }
+
 
         console.log(updatedLinks)
         console.log(updatedNodes)
 
         var u;
         var simulation = d3.forceSimulation(updatedNodes)
-                        .force("charge", d3.forceManyBody().strength(-500))       //Strength of the attraction/repel
+                        .force("charge", d3.forceManyBody().strength(-400))       //Strength of the attraction/repel
                         .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
-                        .force("link", d3.forceLink().links(updatedLinks))
-                        //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
+                        .force("link", d3.forceLink().links(updatedLinks).distance(100))
+                        .force("collision", d3.forceCollide().radius(function(d){return d.radius}))
                         .on("tick", ticked)    //Draws the objects
+
         function ticked()
         {
             /*var u = d3.select("#PPI")
@@ -545,6 +558,24 @@ const Home = () =>
         function updateNodes()
         {
             u = d3.select("#PPI")
+                //.append("g")
+                //.select(".nodes")
+                .selectAll("circle")
+                .data(updatedNodes)
+                .join("circle")
+                .attr("cx", function(d){return d.x})
+                .attr("cy", function(d){return d.y})
+                .attr("r", function(d){return d.radius})
+                /*.text(function(d) {return d.name})
+                .attr("x", function(d){return d.x})
+                .attr("y", function(d){return d.y})
+                .attr("dy", function(d){return 10})
+                .attr("font-weight", 30)
+                .style("font-size", "15px")*/
+                .style("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
+                .attr("id", function(d){return d.name})
+
+            /*u = d3.select("#PPI")
                     //.select(".nodes")
                     .selectAll("text")
                     .data(updatedNodes)
