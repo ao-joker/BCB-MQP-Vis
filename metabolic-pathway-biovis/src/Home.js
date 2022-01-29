@@ -332,9 +332,7 @@ const Home = () =>
                 .attr("id", function(d){return d.name})
                 .on("click", function()
                              {
-                               console.log(this.id)
-                               console.log(masterArray)
-                                //makePPI(this.id)
+                                createPPI(this.id, masterArray)
                              })
             }
 
@@ -474,8 +472,6 @@ const Home = () =>
     //Here, we will actually contrusct the PPI
     function createPPI(proteinInterest, masterArray)
     {
-        console.log(proteinInterest)
-        console.log(masterArray)
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
     
