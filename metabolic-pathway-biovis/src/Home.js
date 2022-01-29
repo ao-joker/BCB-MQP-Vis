@@ -283,10 +283,10 @@ const Home = () =>
 
             var u;
             var pathway =  d3.forceSimulation(nodesP)
-                       .force("charge", d3.forceManyBody().strength(-200))       //Strength of the attraction/repel
+                       .force("charge", d3.forceManyBody().strength(-100))       //Strength of the attraction/repel
                        .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
-                       .force("link", d3.forceLink().links(linksP))
-                       .force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
+                       .force("link", d3.forceLink().links(linksP).distance(50))
+                       .force("collision", d3.forceCollide().radius(function(d){return d.radius}).iterations(10))    //Prevents overlap of objects
                        .on("tick", ticked)    //Draws the objects
 
             function ticked()
@@ -316,23 +316,24 @@ const Home = () =>
                 u = d3.select("#Pathway")
                 //.append("g")
                 //.select(".nodes")
-                .selectAll("text")
+                .selectAll("circle")
                 .data(nodesP)
-                .join("text")
-                /*.attr("cx", function(d){return d.x})
+                .join("circle")
+                .attr("cx", function(d){return d.x})
                 .attr("cy", function(d){return d.y})
-                .attr("r", function(d){return 10})*/
+                .attr("r", function(d){return d.radius})
                 .text(function(d) {return d.name})
-                .attr("x", function(d){return d.x})
+                /*.attr("x", function(d){return d.x})
                 .attr("y", function(d){return d.y})
                 .attr("dy", function(d){return 10})
                 .attr("font-weight", 30)
-                .style("font-size", "15px")
+                .style("font-size", "15px")*/
                 .style("fill", "white")
                 .attr("id", function(d){return d.name})
                 .on("click", function()
                              {
                                console.log(this.id)
+                               console.log(masterArray)
                                 //makePPI(this.id)
                              })
             }
@@ -354,7 +355,8 @@ const Home = () =>
                             //console.log(masterArray[i]["pathway"])
                             var pathwayObject = 
                             {
-                                name: masterArray[i]["name"]
+                                name: masterArray[i]["name"],
+                                radius: 20
                             }
         
                             arr.push(pathwayObject)
@@ -470,21 +472,25 @@ const Home = () =>
     }
 
     //Here, we will actually contrusct the PPI
-    function createPPI(proteinInterest)
+    function createPPI(proteinInterest, masterArray)
     {
+        console.log(proteinInterest)
+        console.log(masterArray)
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
     
+        //Organize the data into a dictionary
         var dict = { "A": [],
-                    "B": ["C"],
-                    "C": ["B"],
-                    "D": ["F", "J"],
-                    "E": ["J"],
-                    "F": ["D"],
-                    "G": [],
-                    "H": [],
-                    "J": ["D", "E", "I"],
-                    "I": ["J"]}
+        "B": ["C"],
+        "C": ["B"],
+        "D": ["F", "J"],
+        "E": ["J"],
+        "F": ["D"],
+        "G": [],
+        "H": [],
+        "J": ["D", "E", "I"],
+        "I": ["J"]}
+        //var PPIDict = organizePPIDict(masterArray)
 
         var links = []
         var updatedLinks = []
