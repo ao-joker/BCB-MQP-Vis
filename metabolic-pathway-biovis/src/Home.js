@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
 import data from "./FINAL-SET.csv";
+import { schemeDark2 } from "d3";
 
 const Home = () => 
 {
@@ -458,7 +459,7 @@ const Home = () =>
   
     }
 
-    function makePPIBase(masterArray)
+    function makePPIBase()
     {
         d3.select("#PPI")
         .append("rect")
@@ -473,6 +474,10 @@ const Home = () =>
     //Here, we will actually contrusct the PPI
     function createPPI(proteinInterest, masterArray)
     {
+        //Remove any existing items and create a new base
+        d3.select("#PPI").selectAll("svg > *").remove()
+        makePPIBase()
+
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
         var updatedLinks = []
@@ -498,14 +503,14 @@ const Home = () =>
 
                 function createUpdatedNodes(protein)
                 {
-                    //First, add the protein that we like to look at
-                    updatedNodes.push({name: protein["name"], radius: 20})
-                    
-                    //Then, add all the other proteins that it interacts with
+                    //First, add all the other proteins that it interacts with
                     protein["PPINetwork"].forEach(function(element)
                                                 {
                                                     updatedNodes.push({name: element, radius: 20})
-                                                }) 
+                                                })   
+
+                    //First, add the protein that we like to look at
+                    updatedNodes.push({name: protein["name"], radius: 20})
                 }
 
                 function createUpdatedLinks(protein)
@@ -517,7 +522,7 @@ const Home = () =>
                                             {}
                                             else
                                             {
-                                                updatedLinks.push({source: 0, target: updatedNodes.indexOf(element)})
+                                                updatedLinks.push({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element)})
                                             }
 
                                         })
