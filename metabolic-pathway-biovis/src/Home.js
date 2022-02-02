@@ -536,13 +536,18 @@ const Home = () =>
         console.log(updatedLinks)
         console.log(updatedNodes)
 
+        const nodes = updatedNodes;
+
         var u;
-        var simulation = d3.forceSimulation(updatedNodes)
+        var simulation = d3.forceSimulation(nodes)
                         .force("charge", d3.forceManyBody().strength(-400))       //Strength of the attraction/repel
                         .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
                         .force("link", d3.forceLink().links(updatedLinks).distance(100))
                         .force("collision", d3.forceCollide().radius(function(d){return d.radius}))
-                        .on("tick", ticked)    //Draws the objects
+
+
+
+        simulation.on("tick", ticked)    //Draws the objects
 
         function ticked()
         {
@@ -585,14 +590,6 @@ const Home = () =>
                     .style("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
                     .attr("id", function(d){return d.name})
 
-                    u.append("text")
-        .attr("x", 30 + 4)
-        .attr("y", "0.31em")
-        .text(d => d.name)
-        .clone(true).lower()
-        .attr("fill", "none")
-        .attr("stroke", "white")
-        .attr("stroke-width", 3);
 
             //updateLinks()
             //updateNodes()

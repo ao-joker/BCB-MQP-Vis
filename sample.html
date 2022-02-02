@@ -415,6 +415,8 @@
   */
   function makePPI(proteinInterest)
   {
+    d3.select("#PPI").selectAll("svg > *").remove()
+
     var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
     var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
     
