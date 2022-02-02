@@ -536,7 +536,28 @@ const Home = () =>
         console.log(updatedLinks)
         console.log(updatedNodes)
 
-        const nodes = updatedNodes;
+        //These will the the heirarchical classes which contain the nodes and links 
+        //AND will have different attributes associated with them in the overall svg here
+        const links = updatedLinks
+        const nodes = updatedNodes
+      
+        //This is the simulation itself that is a force directed network (tick function called later after initializing all
+        //the links and nodes attributes specific to this svg)
+        const simulation = d3.forceSimulation(nodes)
+              .force("link", d3.forceLink(links).id(function(d){return d.index}))
+              .force("charge", d3.forceManyBody().strength(-300))
+              .force("center", d3.forceCenter(width / 2, height / 2))
+              //.force("x", d3.forceX())
+              //.force("y", d3.forceY())
+              .force('collide', d3.forceCollide().radius(function(d){return d.radius}))
+      
+        //Here redefines the svg (I really do not want the viewbox but it seems vital from what I read online lol)
+        const svg = d3.select("#PPI")
+                      .attr("viewBox", [-width / 2, -height / 2, width, height])
+
+        
+
+        /*const nodes = updatedNodes;
 
         var u;
         var simulation = d3.forceSimulation(nodes)
@@ -559,7 +580,7 @@ const Home = () =>
                     .attr("cx", function(d) {return d.x})
                     .attr("cy", function(d) {console.log(d); return d.y})
                     .attr("fill", "green")
-                    .attr("stroke", "black")*/
+                    .attr("stroke", "black")
 
                 u = d3.select("#PPI")
                     //.select(".links")
@@ -586,7 +607,7 @@ const Home = () =>
                     .attr("y", function(d){return d.y})
                     .attr("dy", function(d){return 10})
                     .attr("font-weight", 30)
-                    .style("font-size", "15px")*/
+                    .style("font-size", "15px")
                     .style("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
                     .attr("id", function(d){return d.name})
 
@@ -611,11 +632,11 @@ const Home = () =>
                 .attr("y", function(d){return d.y})
                 .attr("dy", function(d){return 10})
                 .attr("font-weight", 30)
-                .style("font-size", "15px")*/
+                .style("font-size", "15px")
                 .style("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
                 .attr("id", function(d){return d.name})
 
-            /*u = d3.select("#PPI")
+              u = d3.select("#PPI")
                     //.select(".nodes")
                     .selectAll("text")
                     .data(updatedNodes)
@@ -627,11 +648,11 @@ const Home = () =>
                     .attr("id", function(d){return d.name})
                     .attr("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
                     .style("font-size", "30px")
-                    /*.attr("r", function(d) {return d.radius})
+                    .attr("r", function(d) {return d.radius})
                     .attr("cx", function(d) {return d.x})
                     .attr("cy", function(d) {console.log(d); return d.y})
                     .attr("fill", "green")
-                    .attr("stroke", "black")*/
+                    .attr("stroke", "black")
 
         }
 
@@ -647,7 +668,7 @@ const Home = () =>
                     .attr("x2", function(d){return d.target.x})
                     .attr("y2", function(d){return d.target.y})
                     .attr("stroke", "black")
-        }
+        }*/
     }
 
     return(
