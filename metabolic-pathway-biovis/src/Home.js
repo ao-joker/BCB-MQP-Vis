@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
 import data from "./FINAL-SET.csv";
-import { schemeDark2 } from "d3";
 
 const Home = () => 
 {
@@ -538,25 +537,70 @@ const Home = () =>
 
         //These will the the heirarchical classes which contain the nodes and links 
         //AND will have different attributes associated with them in the overall svg here
+        //Much of this heirarchal code is from this user and post on observable - thank you for your help and direction: https://observablehq.com/@brunolaranjeira/d3-v6-force-directed-graph-with-directional-straight-arrow
         const links = updatedLinks
         const nodes = updatedNodes
       
         //This is the simulation itself that is a force directed network (tick function called later after initializing all
         //the links and nodes attributes specific to this svg)
         const simulation = d3.forceSimulation(nodes)
-              .force("link", d3.forceLink(links).id(function(d){return d.index}))
-              .force("charge", d3.forceManyBody().strength(-300))
+              .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(300))
+              .force("charge", d3.forceManyBody().strength(-2000))
               .force("center", d3.forceCenter(width / 2, height / 2))
-              //.force("x", d3.forceX())
-              //.force("y", d3.forceY())
+              .force("x", d3.forceX())
+              .force("y", d3.forceY())
               .force('collide', d3.forceCollide().radius(function(d){return d.radius}))
       
-        //Here redefines the svg (I really do not want the viewbox but it seems vital from what I read online lol)
+        //Here redefines the svg so the simulation can be placed into it and I don't have to keep calling the select function
         const svg = d3.select("#PPI")
-                      .attr("viewBox", [-width / 2, -height / 2, width, height])
+                      //.attr("viewBox", [-width / 2, -height / 2, width, height])
 
+        //Begin with updating and specifying the various link attributes for each link that is contained in the
+        //the links "constant class"
+        const link = svg.append("g")
+                        .attr("fill", "none")   
+                        .attr("stroke-width", 1.5)  //These two specific that a link has no fill and a stroke width, get more specific in the latter half
+                        .selectAll("path")
+                        .data(links)
+                        .join("path")
+                        .attr("stroke", "black") //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
+
+        //Updated and specify the various attributes associated with each node that is a subset of the whole nodes class
+        //Here I am just defining the basic attibutes for the nodes similarly to how it was done in the links above 
+        const node = svg.append("g")
+                        .attr("fill", "white") //Append to the avg as basic background white color
+                        .attr("stroke-linecap", "round")
+                        .attr("stroke-linejoin", "round") //Some cool styles that denote how the links and nodes should be joined together!
+                        .selectAll("g")
+                        .data(nodes)
+                        .join("g")  //Here, now we join the node constant to all updatedNodes contained in nodes "constant class" - purposely left open ended for spacing so it is easier to read and understand but also to make additions!
+                
+                    node.append("circle")
+                        .attr("stroke", function(d){if(d.name === proteinInterest){return "white"}else{return "black"}})
+                        .attr("stroke-width", 1.5)
+                        .attr("r", function(d){return d.radius})
+                        .attr('fill', function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
+                  
+                    node.append("text")
+                        .attr("x", 30)
+                        .attr("y", "0.31em")
+                        .text(function(d){return d.name})
+                        .clone(true).lower()
+                        .attr("fill", "none")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 3) //Here now on the same svg we can append both the circle nodes and text to them. The positions for that are given (exact x and y taken from observable link above since it looks nice but can easily change if need be)                
         
-
+        //Now, to keep the network well updated and better looking than ever before by adding a call to linkArc (which makes the lines straigther n the viewbox) and
+        //a call to a transfrom attribute of the nodes that will properly display the text alongside and with the circle nodes as it moves
+        simulation.on("tick", function(d)
+                              {
+                                  link.attr("d", function(d){return (`M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`)})
+                                  node.attr("transform", function(d){return (`translate(${d.x},${d.y})`)})
+                              })
+    
+        //As mentioned above in the tick addition, this function straightens the lines and makes them look better too!
+        //linkArc = d =>`M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`
+        
         /*const nodes = updatedNodes;
 
         var u;
@@ -675,9 +719,9 @@ const Home = () =>
         <div className="home">
             <h2>The Pathway Itself!</h2>
             <select id="selectButton"></select>
-            <svg id="Pathway" width="1000" height="1000"></svg>
-            <svg id="Regulation" width="500" height="500"></svg>
-            <svg id="PPI" width="500" height="500"></svg>
+            <svg id="Pathway" width="1800" height="1500"></svg>
+            <svg id="Regulation" width="900" height="1000"></svg>
+            <svg id="PPI" width="900" height="1000"></svg>
             
         </div>
     );
