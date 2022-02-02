@@ -458,16 +458,48 @@ const Home = () =>
   
     }
 
-    function makePPIBase()
+    //This function makes the base background the svg is drawn on top off 
+    //Also makes a legend which are kept constant in the overall scheme regardless of how much the PPI will change
+    function makePPIBase(masterArray)
     {
         d3.select("#PPI")
-        .append("rect")
+          .append("rect")
           .attr("x", 0)
           .attr("y", 0)
           .attr("width", 1600)
           .attr("height", 1000)
           .attr("stroke", "red")
           .attr("fill", "red")
+
+        //Here is a makeshift title that will be replaced eventually as the PPI keeps getting updated
+        d3.select("#PPI")
+        .append("text")
+        .attr("id", "PPI Title Sample")
+        .attr("x", '200') 
+        .attr("y", '50')
+        .attr("fill", "black")
+        .attr("stroke", "bold")
+        .attr("font-size", 30)
+        //.attr("text-anchor", "middle")
+        .text("Protein-Protein Interaction Network")
+
+        //Also, I will append the legend to the PPI interaction type here becausse why not
+        //First sort through every possible combination and add to a list besides the proteins with multiple 
+        //Those with multiple will have a separate legend icon called "Multiple interactions" noted and you can identify by a tooltip hovering over the respective node
+        var interactionTypes = []
+        
+        for(var i = 0; i < masterArray.length; i++)
+        {
+            masterArray[i]["PPIInteraction"].forEach(function(element)
+                                                    {
+                                                        if(!(interactionTypes.includes(element)) && !(element.includes("and")) && (element != ""))
+                                                        {
+                                                            interactionTypes.push(element)
+                                                        }
+                                                    })
+        }
+
+        console.log(interactionTypes)
     }
 
     //Here, we will actually contrusct the PPI
@@ -475,7 +507,23 @@ const Home = () =>
     {
         //Remove any existing items and create a new base
         d3.select("#PPI").selectAll("svg > *").remove()
-        makePPIBase()
+        makePPIBase(masterArray)
+
+        //Here is the title, right at the top like you would expect but with the protein name changing everytime a new one is selected
+        //First remove the existing, standard title
+        d3.select("#PPI Title Sample").remove()
+
+        //Add the new fancy title
+        d3.select("#PPI")
+          .append("text")
+          .attr("id", "PPI Title")
+          .attr("x", '150') 
+          .attr("y", '50')
+          .attr("fill", "black")
+          .attr("stroke", "bold")
+          .attr("font-size", 30)
+          //.attr("text-anchor", "middle")
+          .text(`Protein-Protein Interaction Network of ${proteinInterest}`)
 
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
@@ -508,7 +556,7 @@ const Home = () =>
                                                     updatedNodes.push({name: element, radius: 20})
                                                 })   
 
-                    //First, add the protein that we like to look at
+                    //Then, add the protein that we like to look at
                     updatedNodes.push({name: protein["name"], radius: 20})
                 }
 
@@ -517,12 +565,19 @@ const Home = () =>
                     //Add the connection to the first node (protein of interest) to the rest of them
                     updatedNodes.forEach(function(element)
                                         {
-                                            if(element === proteinInterest)
+                                            let i = 0
+
+                                            if(element === protein)
                                             {}
                                             else
                                             {
-                                                updatedLinks.push({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element)})
+                                                //console.log(protein)
+                                                //console.log(protein["PPIInteraction"])
+                                                //console.log(protein["PPIInteraction"][i])
+                                                updatedLinks.push({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element), interaction: protein["PPIInteraction"][i]})
                                             }
+
+                                            i++
 
                                         })
                 }
@@ -535,6 +590,9 @@ const Home = () =>
         console.log(updatedLinks)
         console.log(updatedNodes)
 
+        //Organize all the interaction type of the PPI that there are
+
+
         //These will the the heirarchical classes which contain the nodes and links 
         //AND will have different attributes associated with them in the overall svg here
         //Much of this heirarchal code is from this user and post on observable - thank you for your help and direction: https://observablehq.com/@brunolaranjeira/d3-v6-force-directed-graph-with-directional-straight-arrow
@@ -546,7 +604,7 @@ const Home = () =>
         const simulation = d3.forceSimulation(nodes)
               .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(300))
               .force("charge", d3.forceManyBody().strength(-2000))
-              .force("center", d3.forceCenter(width / 2, height / 2))
+              .force("center", d3.forceCenter(width / 2, (height / 2) + 100))
               .force("x", d3.forceX())
               .force("y", d3.forceY())
               .force('collide', d3.forceCollide().radius(function(d){return d.radius}))
