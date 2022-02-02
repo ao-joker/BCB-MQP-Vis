@@ -472,16 +472,16 @@ const Home = () =>
           .attr("fill", "red")
 
         //Here is a makeshift title that will be replaced eventually as the PPI keeps getting updated
-        d3.select("#PPI")
+        /*d3.select("#PPI")
         .append("text")
-        .attr("id", "PPI Title Sample")
+        .attr("id", "PPI-Title-Sample")
         .attr("x", '200') 
         .attr("y", '50')
         .attr("fill", "black")
         .attr("stroke", "bold")
         .attr("font-size", 30)
         //.attr("text-anchor", "middle")
-        .text("Protein-Protein Interaction Network")
+        .text("Protein-Protein Interaction Network")*/
 
         //Also, I will append the legend to the PPI interaction type here becausse why not
         //First sort through every possible combination and add to a list besides the proteins with multiple 
@@ -499,6 +499,9 @@ const Home = () =>
                                                     })
         }
 
+        //Add a multiple option automatically so that users know that they exist and to hover over with a tooltip
+        interactionTypes.push("Multiple (hover over nodes)")
+
         console.log(interactionTypes)
     }
 
@@ -511,7 +514,7 @@ const Home = () =>
 
         //Here is the title, right at the top like you would expect but with the protein name changing everytime a new one is selected
         //First remove the existing, standard title
-        d3.select("#PPI Title Sample").remove()
+        d3.select("#PPI-Title-Sample").remove()
 
         //Add the new fancy title
         d3.select("#PPI")
