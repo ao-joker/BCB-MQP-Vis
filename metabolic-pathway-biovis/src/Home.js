@@ -556,8 +556,46 @@ const Home = () =>
                     .attr("fill", "green")
                     .attr("stroke", "black")*/
 
-            updateLinks()
-            updateNodes()
+                u = d3.select("#PPI")
+                    //.select(".links")
+                    .selectAll("line")
+                    .data(updatedLinks)
+                    .join("line")
+                    .attr("x1", function(d){return d.source.x})
+                    .attr("y1", function(d){return d.source.y})
+                    .attr("x2", function(d){return d.target.x})
+                    .attr("y2", function(d){return d.target.y})
+                    .attr("stroke", "black")
+
+                u = d3.select("#PPI")
+                    //.append("g")
+                    //.select(".nodes")
+                    .selectAll("circle")
+                    .data(updatedNodes)
+                    .join("circle")
+                    .attr("cx", function(d){return d.x})
+                    .attr("cy", function(d){return d.y})
+                    .attr("r", function(d){return d.radius})
+                    /*.text(function(d) {return d.name})
+                    .attr("x", function(d){return d.x})
+                    .attr("y", function(d){return d.y})
+                    .attr("dy", function(d){return 10})
+                    .attr("font-weight", 30)
+                    .style("font-size", "15px")*/
+                    .style("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
+                    .attr("id", function(d){return d.name})
+
+                    u.append("text")
+        .attr("x", 30 + 4)
+        .attr("y", "0.31em")
+        .text(d => d.name)
+        .clone(true).lower()
+        .attr("fill", "none")
+        .attr("stroke", "white")
+        .attr("stroke-width", 3);
+
+            //updateLinks()
+            //updateNodes()
         }
 
         function updateNodes()

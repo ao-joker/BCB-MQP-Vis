@@ -429,7 +429,6 @@
                  "J": ["D", "E", "I"],
                  "I": ["J"]}
 
-    var links = []
     var updatedLinks = []
     var updatedNodes = []
     
@@ -485,63 +484,76 @@
     //console.log(n = [{name: "J"}])
     //j = [{source: 0, target: 1}, {source: 2, target:1}])
 */
-    var simulation = d3.forceSimulation(updatedNodes)
-                       .force("charge", d3.forceManyBody().strength(-500))       //Strength of the attraction/repel
-                       .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
-                       .force("link", d3.forceLink().links(updatedLinks))
-                       //.force("collision", d3.forceCollide().radius(function(d){return d.radius}))    //Prevents overlap of objects
-                       .on("tick", ticked)    //Draws the objects
-    function ticked()
-    {
-      /*var u = d3.select("#PPI")
-              .selectAll("circle")
-              .data(nodes)
-              .join("circle")
-              .attr("r", function(d) {return d.radius})
-              .attr("cx", function(d) {return d.x})
-              .attr("cy", function(d) {console.log(d); return d.y})
-              .attr("fill", "green")
-              .attr("stroke", "black")*/
+  const links = updatedLinks
+    const nodes = updatedNodes
 
-      updateLinks()
-      updateNodes()
-    }
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.index))
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("x", d3.forceX())
+        .force("y", d3.forceY())
+        .force('collide', d3.forceCollide(d => 65))
 
-    function updateNodes()
-    {
-      u = d3.select("#PPI")
-                //.select(".nodes")
-                .selectAll("text")
-                .data(updatedNodes)
-                .join("text")
-                .text(function(d) {return d.name})
-                .attr("x", function(d){return d.x})
-                .attr("y", function(d){return d.y})
-                .attr("dy", function(d){return 5})
-                .attr("id", function(d){return d.name})
-                .attr("fill", function(d){ if(d.name === proteinInterest){return "green"}else{return "black"}})
-                .style("font-size", "30px")
-                /*.attr("r", function(d) {return d.radius})
-                .attr("cx", function(d) {return d.x})
-                .attr("cy", function(d) {console.log(d); return d.y})
-                .attr("fill", "green")
-                .attr("stroke", "black")*/
+    const svg = d3.select("#PPI")
+        .attr("viewBox", [-width / 2, -height / 2, width, height])
 
-    }
+    // Per-type markers, as they don't inherit styles.
+    /*svg.append("defs").selectAll("marker")
+        .data(types)
+        .join("marker")
+        .attr("id", d => `arrow-${d}`)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 38)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("fill", color)
+        .attr("d", 'M0,-5L10,0L0,5');*/
 
-    function updateLinks()
-    {
-      var u = d3.select("#PPI")
-                //.select(".links")
-                .selectAll("line")
-                .data(updatedLinks)
-                .join("line")
-                .attr("x1", function(d){return d.source.x})
-                .attr("y1", function(d){return d.source.y})
-                .attr("x2", function(d){return d.target.x})
-                .attr("y2", function(d){return d.target.y})
-                .attr("stroke", "black")
-    }
+    const link = svg.append("g")
+        .attr("fill", "none")
+        .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(links)
+        .join("path")
+        .attr("stroke", "black")//d => color(d.type))
+        .attr("marker-end", d => `url(${new URL(`#arrow-${d.type}`, location)})`);
+
+    const node = svg.append("g")
+        .attr("fill", "currentColor")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+        .selectAll("g")
+        .data(nodes)
+        .join("g")
+        //.call(drag(simulation));
+
+    node.append("circle")
+        .attr("stroke", "white")
+        .attr("stroke-width", 1.5)
+        .attr("r", 25)
+        .attr('fill', d => '#6baed6');
+  
+    node.append("text")
+        .attr("x", 30 + 4)
+        .attr("y", "0.31em")
+        .text(d => d.name)
+        .clone(true).lower()
+        .attr("fill", "none")
+        .attr("stroke", "white")
+        .attr("stroke-width", 3);
+  
+    node.on('dblclick', (e, d) => console.log(nodes[d.index]))
+
+
+    simulation.on("tick", () => {
+        link.attr("d", linkArc);
+        node.attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    linkArc = d =>`M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`
   }
 
 
