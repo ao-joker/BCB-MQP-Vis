@@ -468,8 +468,8 @@ const Home = () =>
           .attr("y", 0)
           .attr("width", 1600)
           .attr("height", 1000)
-          .attr("stroke", "red")
-          .attr("fill", "red")
+          .attr("stroke", "pink")
+          .attr("fill", "pink")
 
         //Here is a makeshift title that will be replaced eventually as the PPI keeps getting updated
         /*d3.select("#PPI")
@@ -482,27 +482,6 @@ const Home = () =>
         .attr("font-size", 30)
         //.attr("text-anchor", "middle")
         .text("Protein-Protein Interaction Network")*/
-
-        //Also, I will append the legend to the PPI interaction type here becausse why not
-        //First sort through every possible combination and add to a list besides the proteins with multiple 
-        //Those with multiple will have a separate legend icon called "Multiple interactions" noted and you can identify by a tooltip hovering over the respective node
-        var interactionTypes = []
-        
-        for(var i = 0; i < masterArray.length; i++)
-        {
-            masterArray[i]["PPIInteraction"].forEach(function(element)
-                                                    {
-                                                        if(!(interactionTypes.includes(element)) && !(element.includes("and")) && (element != ""))
-                                                        {
-                                                            interactionTypes.push(element)
-                                                        }
-                                                    })
-        }
-
-        //Add a multiple option automatically so that users know that they exist and to hover over with a tooltip
-        interactionTypes.push("Multiple (hover over nodes)")
-
-        console.log(interactionTypes)
     }
 
     //Here, we will actually contrusct the PPI
@@ -520,13 +499,60 @@ const Home = () =>
         d3.select("#PPI")
           .append("text")
           .attr("id", "PPI Title")
-          .attr("x", '150') 
+          .attr("x", '140') 
           .attr("y", '50')
           .attr("fill", "black")
           .attr("stroke", "bold")
           .attr("font-size", 30)
           //.attr("text-anchor", "middle")
           .text(`Protein-Protein Interaction Network of ${proteinInterest}`)
+
+        //Add the legend and color coordination
+        //First sort through every possible combination and add to a list besides the proteins with multiple 
+        //Those with multiple will have a separate legend icon called "Multiple interactions" noted and you can identify by a tooltip hovering over the respective node
+        var interactionTypes = []
+        
+        for(var i = 0; i < masterArray.length; i++)
+        {
+            masterArray[i]["PPIInteraction"].forEach(function(element)
+                                                    {
+                                                        if(!(interactionTypes.includes(element)) && !(element.includes("and")) && (element != ""))
+                                                        {
+                                                            interactionTypes.push(element)
+                                                        }
+                                                    })
+        }
+
+        //Add a multiple option automatically so that users know that they exist and to hover over with a tooltip
+        interactionTypes.push("Multiple (hover over proteins)")
+        console.log(interactionTypes)
+
+        //Now create the legend by drawing a bunch of boxes and a text associated with that box in question
+        const colorLegend = d3.scaleOrdinal(interactionTypes, d3.schemeCategory10)
+        //console.log(colorLegend)
+        
+        d3.select("#PPI")
+          .selectAll("interactionColorSquares")
+          .data(interactionTypes)
+          .enter()
+          .append("rect")
+          .attr("x", 75)
+          .attr("y", function(d,i){return 100 + i * (25)}) 
+          .attr("width", 20)
+          .attr("height", 20)
+          .style("fill", function(d){return colorLegend(d)})
+
+        d3.select("#PPI")
+          .selectAll("interactionLabels")
+          .data(interactionTypes)
+          .enter()
+          .append("text")
+          .attr("x", 100 + (20 * 1.2))
+          .attr("y", function(d,i){return 100 + i*(25) + (25 / 2)})
+          .style("fill", function(d){return colorLegend(d)})
+          .text(function(d){return d})
+          .attr("text-anchor", "left")
+          .style("alignment-baseline", "middle")
 
         var width = Number(d3.select("#PPI").style("width").replace(/px$/, ''))
         var height = Number(d3.select("#PPI").style("height").replace(/px$/, ''))
@@ -553,10 +579,14 @@ const Home = () =>
 
                 function createUpdatedNodes(protein)
                 {
+                    //Counter variable
+                    let i = 0
+
                     //First, add all the other proteins that it interacts with
                     protein["PPINetwork"].forEach(function(element)
                                                 {
-                                                    updatedNodes.push({name: element, radius: 20})
+                                                    updatedNodes.push({name: element, radius: 20, interaction: protein["PPIInteraction"][i]})
+                                                    i++
                                                 })   
 
                     //Then, add the protein that we like to look at
@@ -565,23 +595,16 @@ const Home = () =>
 
                 function createUpdatedLinks(protein)
                 {
+                    //Counter variable
+                    let i = 0
+
                     //Add the connection to the first node (protein of interest) to the rest of them
                     updatedNodes.forEach(function(element)
                                         {
-                                            let i = 0
-
-                                            if(element === protein)
-                                            {}
-                                            else
-                                            {
-                                                //console.log(protein)
-                                                //console.log(protein["PPIInteraction"])
-                                                //console.log(protein["PPIInteraction"][i])
-                                                updatedLinks.push({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element), interaction: protein["PPIInteraction"][i]})
-                                            }
-
+                                            //console.log({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element), interaction: protein["PPIInteraction"][i]})
+                                            //console.log(protein)
+                                            updatedLinks.push({source: (updatedNodes.length - 1), target: updatedNodes.indexOf(element), interaction: protein["PPIInteraction"][i]})
                                             i++
-
                                         })
                 }
             }
@@ -592,9 +615,6 @@ const Home = () =>
 
         console.log(updatedLinks)
         console.log(updatedNodes)
-
-        //Organize all the interaction type of the PPI that there are
-
 
         //These will the the heirarchical classes which contain the nodes and links 
         //AND will have different attributes associated with them in the overall svg here
@@ -624,7 +644,7 @@ const Home = () =>
                         .selectAll("path")
                         .data(links)
                         .join("path")
-                        .attr("stroke", "black") //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
+                        .attr("stroke", function(d){if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}) //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
 
         //Updated and specify the various attributes associated with each node that is a subset of the whole nodes class
         //Here I am just defining the basic attibutes for the nodes similarly to how it was done in the links above 
@@ -637,7 +657,7 @@ const Home = () =>
                         .join("g")  //Here, now we join the node constant to all updatedNodes contained in nodes "constant class" - purposely left open ended for spacing so it is easier to read and understand but also to make additions!
                 
                     node.append("circle")
-                        .attr("stroke", function(d){if(d.name === proteinInterest){return "white"}else{return "black"}})
+                        .attr("stroke", function(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}})
                         .attr("stroke-width", 1.5)
                         .attr("r", function(d){return d.radius})
                         .attr('fill', function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
