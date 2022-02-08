@@ -671,6 +671,28 @@ const Home = () =>
                         .attr("stroke", "black")
                         .attr("stroke-width", 3) //Here now on the same svg we can append both the circle nodes and text to them. The positions for that are given (exact x and y taken from observable link above since it looks nice but can easily change if need be)                
         
+        //Create the tooltip variable that will display the name of the protein and the specific type interaction again
+        var tooltip = d3.select("#PPI")
+                        .append("div") // the tooltip always "exists" as its own html div, even when not visible
+                        .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
+                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover
+                        .style("background-color", "white")
+                        .attr("class", "tooltip")
+        
+                    node.on("mouseover", function(event, d)
+                        {
+                            return tooltip.html("<h4>" + d.name + "</h4></br><p>" + d.type + "</p>") // add an html element with a header tag containing the name of the node.  This line is where you would add additional information like: "<h4>" + d.name + "</h4></br><p>" + d.type + "</p>"  Note the quote marks, pluses and </br>--these are necessary for javascript to put all the data and strings within quotes together properly.  Any text needs to be all one line in .html() here
+                                          .style("visibility", "visible") // make the tooltip visible on hover
+                                          .style("top", event.pageY + "px") // position the tooltip with its top at the same pixel location as the mouse on the screen
+                                          .style("left", event.pageX + "px") // position the tooltip just to the right of the mouse location
+                        })//tooltip_in)
+                        .on("mouseout", function()
+                        {
+                            return tooltip.transition()
+                            .duration(50) // give the hide behavior a 50 milisecond delay so that it doesn't jump around as the network moves
+                            .style("visibility", "hidden"); // hide the tooltip when the mouse stops hovering
+                        })
+
         //Now, to keep the network well updated and better looking than ever before by adding a call to linkArc (which makes the lines straigther n the viewbox) and
         //a call to a transfrom attribute of the nodes that will properly display the text alongside and with the circle nodes as it moves
         simulation.on("tick", function(d)
