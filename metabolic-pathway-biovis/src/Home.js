@@ -435,9 +435,9 @@ const Home = () =>
                         }
                     }
                 }
-                else
+                else if(pathwayType === "Protein-Molecule-Protein")
                 {
-
+                    
                 }
 
                 return arr;
