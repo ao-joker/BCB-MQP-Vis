@@ -437,7 +437,7 @@ const Home = () =>
                 }
                 else if(pathwayType === "Protein-Molecule-Protein")
                 {
-                    
+
                 }
 
                 return arr;
@@ -456,12 +456,12 @@ const Home = () =>
                     if(masterArray[i]["pathway"].includes(selectedPathway))
                     {
                         let str = masterArray[i]["connections"]
-                        console.log(masterArray[i] + '\n' + str)
+                        //console.log(masterArray[i] + '\n' + str)
 
                         switch(str.length)
                         {
                             case 0:
-                                console.log("HERE AT 0")
+                                //console.log("HERE AT 0")
                                 arr.push("NOTHING")
                                 break;
 
@@ -749,40 +749,40 @@ const Home = () =>
         
         //A little sneaky tooltip for ya!
                     node.append("rect")
-                        .attr("id", "tooltip")
+                        .attr("id", "tooltipSquare")
                         .attr("x", -5)
                         .attr("y", -5)
                         .attr("width", 1)
                         .attr("height", 1)
                         .attr("fill", "white")
                         .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
-                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover
-                        .append("text")
-                        .attr("x", '5') 
-                        .attr("y", '55')
+                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover    
+                        
+                    node.append("text")
+                        .attr("id", "tooltipText")
+                        .attr("x", 5) 
+                        .attr("y", 15)
                         .attr('fill', 'black')
                         .attr('stroke', 'bold')
-                        .attr('font-size', 35)
-                            .text("HI")//`Protein:${function(d){console.log(d.name); return d.name}} and Interaction Type(s): ${function(d){return d.interaction}}`)
+                        .attr('font-size', 12.5)
+                        .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
+                        //.style("visibility", "hidden") // hide it from default at the start so it only appears on hover   
+                        .text(function(d){return "Protein: " + d.name + "\r\nInteraction(s): " + d.interaction})
         
                     node.on("mouseover", function()
                         {
-                            d3.select(this)
-                              .select("#tooltip")
-                              .attr("width", 100)
-                              .attr("height", 80)
-                              .text("HI")
-                              .style("visibility", "visible")
+                            console.log("I AM HERE")
 
-                            //d3.select(this).select("circle").attr("r", 100)
-                            /*tooltip.attr("x", event.pageX)
-                                   .attr("y", event.pageY)
-                                   .style("visibility", "visible") // hide it from default at the start so it only appears on hover*/
-                        })//tooltip_in)
+                            d3.select(this)
+                              .select("#tooltipSquare")
+                              .attr("width", 125)
+                              .attr("height", 80)
+                              .style("visibility", "visible")
+                        })
                         .on("mouseout", function()
                         {
                             d3.select(this)
-                              .select("#tooltip")
+                              .select("#tooltipSquare")
                               .attr("width", 1)
                               .attr("height", 1)
                               .style("visibility", "hidden")
