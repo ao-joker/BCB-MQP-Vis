@@ -118,7 +118,7 @@ const Home = () =>
         var y0 = 10 //y offset
 
         //Pathway creation and update
-        var selectedPathway = "Glycolysis/Gluconeogensis"
+        var selectedPathway = /*"Citrate Cycle"*/ "Glycolysis/Gluconeogensis"
         var pathwayType = "Protein-Protein"
 
         //Background for the svg
@@ -222,7 +222,7 @@ const Home = () =>
                     selectedPathway = d3.select(this).property("value")
                     console.log(selectedPathway) 
                     
-                    drawPathway(selectedPathway)
+                   //drawPathway(selectedPathway)
                  })
 
             /*d3.select("#Pathway")
@@ -274,8 +274,21 @@ const Home = () =>
             //console.log(selectedPathway)
             var nodesP = assignNodes(masterArray, pathwayType, selectedPathway)
             var linksP = assignLinks(masterArray, selectedPathway)
-            //console.log(nodesP)
-            //console.log(linksP)
+            console.log(nodesP)
+            console.log(linksP)
+
+            if(linksP[0] === "NOTHING")
+            {
+                linksP.pop()
+                
+                var pathwayObject = 
+                {
+                    source: 0,
+                    target: 0
+                }
+
+                linksP.push(pathwayObject)
+            }
 
             //Create the pathway force-directed network
             var width = Number(d3.select("#Pathway").style("width").replace(/px$/, '')) + 50
@@ -443,12 +456,13 @@ const Home = () =>
                     if(masterArray[i]["pathway"].includes(selectedPathway))
                     {
                         let str = masterArray[i]["connections"]
-                        //console.log(str)
+                        console.log(masterArray[i] + '\n' + str)
 
                         switch(str.length)
                         {
                             case 0:
-                                arr.push("")
+                                console.log("HERE AT 0")
+                                arr.push("NOTHING")
                                 break;
 
                             case 1:
@@ -532,7 +546,7 @@ const Home = () =>
           .attr("fill", "pink")
 
         //Here is a makeshift title that will be replaced eventually as the PPI keeps getting updated
-        /*d3.select("#PPI")
+        d3.select("#PPI")
         .append("text")
         .attr("id", "PPI-Title-Sample")
         .attr("x", '200') 
@@ -541,7 +555,7 @@ const Home = () =>
         .attr("stroke", "bold")
         .attr("font-size", 30)
         //.attr("text-anchor", "middle")
-        .text("Protein-Protein Interaction Network")*/
+        .text("Protein-Protein Interaction Network")
     }
 
     //Here, we will actually contrusct the PPI
@@ -550,6 +564,8 @@ const Home = () =>
         //Remove any existing items and create a new base
         d3.select("#PPI").selectAll("svg > *").remove()
         makePPIBase(masterArray)
+
+        console.log(masterArray)
 
         //Here is the title, right at the top like you would expect but with the protein name changing everytime a new one is selected
         //First remove the existing, standard title
