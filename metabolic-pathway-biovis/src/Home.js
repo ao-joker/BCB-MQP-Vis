@@ -281,61 +281,121 @@ const Home = () =>
             var width = Number(d3.select("#Pathway").style("width").replace(/px$/, '')) + 50
             var height = Number(d3.select("#Pathway").style("height").replace(/px$/, ''))
 
-            var u;
-            var pathway =  d3.forceSimulation(nodesP)
-                       .force("charge", d3.forceManyBody().strength(-100))       //Strength of the attraction/repel
-                       .force("center", d3.forceCenter(width / 2, height / 2))     //Determines center of the system
-                       .force("link", d3.forceLink().links(linksP).distance(50))
-                       .force("collision", d3.forceCollide().radius(function(d){return d.radius}).iterations(10))    //Prevents overlap of objects
-                       .on("tick", ticked)    //Draws the objects
+        //These will the the heirarchical classes which contain the nodes and links 
+        //AND will have different attributes associated with them in the overall svg here
+        //Much of this heirarchal code is from this user and post on observable - thank you for your help and direction: https://observablehq.com/@brunolaranjeira/d3-v6-force-directed-graph-with-directional-straight-arrow
+        const links = linksP
+        const nodes = nodesP
+      
+        //This is the simulation itself that is a force directed network (tick function called later after initializing all
+        //the links and nodes attributes specific to this svg)
+        const simulation = d3.forceSimulation(nodes)
+              .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(100))
+              .force("charge", d3.forceManyBody().strength(-3000))
+              .force("center", d3.forceCenter(width / 2, (height / 2) + 100))
+              .force("x", d3.forceX())
+              .force("y", d3.forceY())
+              .force('collide', d3.forceCollide().radius(function(d){return d.radius}))
+      
+        //Here redefines the svg so the simulation can be placed into it and I don't have to keep calling the select function
+        const svg = d3.select("#Pathway")
+                      //.attr("viewBox", [-width / 2, -height / 2, width, height])
 
-            function ticked()
-            {
-              updateLinks()
-              updateNodes()
-            }
+        //Begin with updating and specifying the various link attributes for each link that is contained in the
+        //the links "constant class"
+        const link = svg.append("g")
+                        .attr("fill", "none")   
+                        .attr("stroke-width", 1.5)  //These two specific that a link has no fill and a stroke width, get more specific in the latter half
+                        .selectAll("path")
+                        .data(links)
+                        .join("path")
+                        .attr("stroke", "white")//function(d){if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}) //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
 
-            function updateLinks()
-            {
-                u = d3.select("#Pathway")
-                //.append("g")
-                //.select(".links")
-                .selectAll("line")
-                .data(linksP)
-                .join("line")
-                .attr("x1", function(d){return d.source.x})
-                .attr("y1", function(d){return d.source.y})
-                .attr("x2", function(d){return d.target.x})
-                .attr("y2", function(d){return d.target.y})
-                .attr("stroke", "white")
-                //.attr('marker-end', 'url(#arrow)')
-            }   
+        //Updated and specify the various attributes associated with each node that is a subset of the whole nodes class
+        //Here I am just defining the basic attibutes for the nodes similarly to how it was done in the links above 
+        const node = svg.append("g")
+                        .attr("fill", "white") //Append to the avg as basic background white color
+                        .attr("stroke-linecap", "round")
+                        .attr("stroke-linejoin", "round") //Some cool styles that denote how the links and nodes should be joined together!
+                        .selectAll("g")
+                        .data(nodes)
+                        .join("g")  //Here, now we join the node constant to all updatedNodes contained in nodes "constant class" - purposely left open ended for spacing so it is easier to read and understand but also to make additions!
+                
+                    node.append("circle")
+                        .attr("stroke", "white")//(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}})
+                        .attr("stroke-width", 1.5)
+                        .attr("r", function(d){return d.radius})
+                        .attr('fill', "white")
+                        .attr("id", function(d){return d.name})//function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
+                  
+                    node.append("text")
+                        .attr("x", 30)
+                        .attr("y", "0.31em")
+                        .text(function(d){return d.name})
+                        .clone(true).lower()
+                        .attr("fill", "none")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 3) //Here now on the same svg we can append both the circle nodes and text to them. The positions for that are given (exact x and y taken from observable link above since it looks nice but can easily change if need be)                
+        
+        //A little sneaky tooltip for ya!
+                    node.append("rect")
+                        .attr("id", "tooltip")
+                        .attr("x", -5)
+                        .attr("y", -5)
+                        .attr("width", 1)
+                        .attr("height", 1)
+                        .attr("fill", "white")
+                        .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
+                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover
+                        .append("text")
+                        .attr("x", '5') 
+                        .attr("y", '55')
+                        .attr('fill', 'black')
+                        .attr('stroke', 'bold')
+                        .attr('font-size', 35)
+                            .text("HI")//`Protein:${function(d){console.log(d.name); return d.name}} and Interaction Type(s): ${function(d){return d.interaction}}`)
 
-            function updateNodes()
-            {
-                u = d3.select("#Pathway")
-                //.append("g")
-                //.select(".nodes")
-                .selectAll("circle")
-                .data(nodesP)
-                .join("circle")
-                .attr("cx", function(d){return d.x})
-                .attr("cy", function(d){return d.y})
-                .attr("r", function(d){return d.radius})
-                .text(function(d) {return d.name})
-                /*.attr("x", function(d){return d.x})
-                .attr("y", function(d){return d.y})
-                .attr("dy", function(d){return 10})
-                .attr("font-weight", 30)
-                .style("font-size", "15px")*/
-                .style("fill", "white")
-                .attr("id", function(d){return d.name})
-                .on("click", function()
-                             {
-                                console.log(this.id)
-                                createPPI(this.id, masterArray)
-                             })
-            }
+                    //Draw PPI 
+                    node.on("click", function(event, d)
+                    {
+                        //console.log(d3.select(this).select("circle"))
+                        //console.log(d3.select(this).select("#tooltip"))
+                        console.log(d.name)
+                        //console.log(String(this.id))
+                        //console.log(this.name)
+                        createPPI(d.name, masterArray)
+                    })
+
+                    node.on("mouseover", function()
+                        {
+                            d3.select(this)
+                              .select("#tooltip")
+                              .attr("width", 100)
+                              .attr("height", 80)
+                              .text("HI")
+                              .style("visibility", "visible")
+
+                            //d3.select(this).select("circle").attr("r", 100)
+                            /*tooltip.attr("x", event.pageX)
+                                   .attr("y", event.pageY)
+                                   .style("visibility", "visible") // hide it from default at the start so it only appears on hover*/
+                        })//tooltip_in)
+                        .on("mouseout", function()
+                        {
+                            d3.select(this)
+                              .select("#tooltip")
+                              .attr("width", 1)
+                              .attr("height", 1)
+                              .style("visibility", "hidden")
+                        })
+
+        //Now, to keep the network well updated and better looking than ever before by adding a call to linkArc (which makes the lines straigther n the viewbox) and
+        //a call to a transfrom attribute of the nodes that will properly display the text alongside and with the circle nodes as it moves
+        simulation.on("tick", function(d)
+                              {
+                                  link.attr("d", function(d){return (`M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`)})
+                                  node.attr("transform", function(d){return (`translate(${d.x},${d.y})`)})
+                              })
 
             //Create the list of nodes that fit the pathway typein question 
             function assignNodes(masterArray, pathwayType, selectedPathway)
@@ -516,7 +576,7 @@ const Home = () =>
         {
             masterArray[i]["PPIInteraction"].forEach(function(element)
                                                     {
-                                                        if(!(interactionTypes.includes(element)) && !(element.includes("and")) && (element != ""))
+                                                        if(!(interactionTypes.includes(element)) && !(element.includes("and")) && (element !== ""))
                                                         {
                                                             interactionTypes.push(element)
                                                         }
