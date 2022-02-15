@@ -44,8 +44,8 @@ const Home = () =>
               name: data[i]["Protein Name"],
               id: data[i]["Protein ID"],
               pathway: commaSeparatedStringToList(data[i]["Pathway"]),
-              connections: data[i]["List of Proteins Connected To"],
-              molecules: data[i]["Molecules Connected To"],
+              connections: commaSeparatedStringToList(data[i]["List of Proteins Connected To"]),
+              molecules: commaSeparatedStringToList(data[i]["Molecules Connected To"]),
               pathwayConnection: data[i]["Other Pathways Connected To"],
               TF:data[i]["List of TF Reg"],
               regulation: data[i]["Corresponding reg"],
@@ -107,29 +107,82 @@ const Home = () =>
     {
         /*  Necessary variabels for this function and other nested functions
             with the intended use and function noted according to the <variable></variable>   */
-
-        //Radio button creating
-        var labels= ["Protein-Protein", "Protein-Molecule-Protein"] //A set of labels for the buttons. All other layouts should be pused onto this list!
-        var layoutType = ["Protein-Protein", "Protein-Molecule-Protein"] //The layouts that are applicable. Variable to store names as strings for id attribute creation
-        var rbWidth = 200 //button width
-        var rbHeight = 30 //button height
-        var rbSpace = 30 //space between buttons
-        var x0 = 20 //x offset
-        var y0 = 10 //y offset
-
-        //Pathway creation and update
         var selectedPathway = /*"Citrate Cycle"*/ "Glycolysis/Gluconeogensis"
         var pathwayType = "Protein-Protein"
 
-        //Background for the svg
-        d3.select("#Pathway")
-        .append("rect")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", 4000)
-          .attr("height", 2000)
-          .attr("stroke", "black")
-          .attr("fill", "black")
+        //Makes the background panel and the radio buttons
+        drawBasicBackground()
+
+            //A dropdown menu so that the user can choose the pathway of choice
+            //Get all the potential values for pathways in the csv
+            var pathwayDropDownValues = getAllPathwayOptions(masterArray)
+            //console.log(pathwayDropDownValues)
+            console.log(selectedPathway)
+
+            //Create the actual dropdown menu
+            d3.select("#selectButton")
+              .selectAll('myOptions')
+     	      .data(pathwayDropDownValues)
+              .enter()
+    	      .append('option')
+              .text(function(d){return d;}) // text showed in the menu
+              .attr("value", function(d){return d;}) // corresponding value returned by the button
+              
+            d3.select("#selectButton")
+              .on("change", function(event, d)
+                 {
+                    //Update which pathway we want to draw
+                    selectedPathway = d3.select(this).property("value")
+                    console.log(selectedPathway) 
+                    
+                    //Get rid of the existing pathway and redraw everything that is basically there
+                    d3.select("#Pathway").selectAll("svg > *").remove()
+                    drawBasicBackground()
+
+                    //Draw the new pathway
+                    drawPathway(masterArray, pathwayType, selectedPathway)
+                 })
+                
+         //A function that inputs all the values for potentially viewed vis
+        function getAllPathwayOptions(masterArray)
+        {
+            //Temporary array used to hold the different pathways
+            let arr = []
+
+            for(var i = 0; i < masterArray.length; i++)
+            {
+                masterArray[i]["pathway"].forEach(function(element)
+                                                  {
+                                                    if(!(arr.includes(element)))
+                                                    {
+                                                        arr.push(element)
+                                                    }
+                                                  })
+            }
+                return arr;
+        }
+
+        function drawBasicBackground()
+        {
+
+            //Radio button creating
+            var labels= ["Protein-Protein", "Protein-Molecule-Protein"] //A set of labels for the buttons. All other layouts should be pused onto this list!
+            var layoutType = ["Protein-Protein", "Protein-Molecule-Protein"] //The layouts that are applicable. Variable to store names as strings for id attribute creation
+            var rbWidth = 200 //button width
+            var rbHeight = 30 //button height
+            var rbSpace = 30 //space between buttons
+            var x0 = 20 //x offset
+            var y0 = 10 //y offset
+
+            //Background for the svg
+            d3.select("#Pathway")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 4000)
+                .attr("height", 2000)
+                .attr("stroke", "black")
+                .attr("fill", "black")
 
             //Radio buttons
             //Create the listed buttons to view the following: protein-protein ; protein-molecule-protein
@@ -147,7 +200,17 @@ const Home = () =>
                                                .style("cursor", "pointer")
                                                .on("click", function(d)
                                                   {
-                                                     updateRadioButtons(d3.select(this), d3.select(this.parentNode))
+                                                    //Update type of pathway we want to draw
+                                                    pathwayType = d3.select(this).text()
+                                                    console.log(pathwayType) 
+                                                    
+                                                    //Get rid of the existing pathway and redraw everything that is basically there
+                                                    d3.select("#Pathway").selectAll("svg > *").remove()
+                                                    drawBasicBackground()
+                                                    updateRadioButtons(d3.select(this), d3.select(this.parentNode))
+                                                    
+                                                    //Draw the new pathway
+                                                    drawPathway(masterArray, pathwayType, selectedPathway)
                                                   })
 
             //adding a rect to each button group
@@ -190,40 +253,18 @@ const Home = () =>
             //and to inform which model of the pathway should be shown
             function updateRadioButtons(button, parent)
             {
+                console.log("HERE")
+
                 parent.selectAll("rect")
                       .attr("fill", "red")
                       .attr("stroke", "black")
     
                 button.select("rect")
                       .attr("fill", "blue")
-                      .attr("stroke", "white")
-
-                
+                      .attr("stroke", "white")    
             }
 
-            //A dropdown menu so that the user can choose the pathway of choice
-            //Get all the potential values for pathways in the csv
-            var pathwayDropDownValues = getAllPathwayOptions(masterArray)
-            //console.log(pathwayDropDownValues)
-            console.log(selectedPathway)
 
-            //Create the actual dropdown menu
-            d3.select("#selectButton")
-              .selectAll('myOptions')
-     	      .data(pathwayDropDownValues)
-              .enter()
-    	      .append('option')
-              .text(function(d){return d;}) // text showed in the menu
-              .attr("value", function(d){return d;}) // corresponding value returned by the button
-              
-            d3.select("#selectButton")
-              .on("change", function(event, d)
-                 {
-                    selectedPathway = d3.select(this).property("value")
-                    console.log(selectedPathway) 
-                    
-                   //drawPathway(selectedPathway)
-                 })
 
             /*d3.select("#Pathway")
                              .append("g")
@@ -244,28 +285,10 @@ const Home = () =>
               .attr("value", function (d) {return d;}) */
               //.on("change", updatePathwayLayout(masterArray, d3.select(this).attr("value")))
       
+        }
 
-            //A function that inputs all the values for potentially viewed vis
-            function getAllPathwayOptions(masterArray)
-            {
-                //Temporary array used to hold the different pathways
-                let arr = []
-
-                for(var i = 0; i < masterArray.length; i++)
-                {
-                    masterArray[i]["pathway"].forEach(function(element)
-                                                     {
-                                                        if(!(arr.includes(element)))
-                                                        {
-                                                            arr.push(element)
-                                                        }
-                                                     })
-                }
-
-                return arr;
-            }
-        
         //Actually making the pathway
+        //Always start with Glycolysis
         drawPathway(masterArray, pathwayType, selectedPathway)
 
         function drawPathway(masterArray, pathwayType, selectedPathway)
@@ -273,7 +296,7 @@ const Home = () =>
             //Call functions that assign links and nodes specific to the pathway selected
             //console.log(selectedPathway)
             var nodesP = assignNodes(masterArray, pathwayType, selectedPathway)
-            var linksP = assignLinks(masterArray, selectedPathway)
+            var linksP = assignLinks(masterArray, nodesP, selectedPathway)
             console.log(nodesP)
             console.log(linksP)
 
@@ -303,8 +326,8 @@ const Home = () =>
         //This is the simulation itself that is a force directed network (tick function called later after initializing all
         //the links and nodes attributes specific to this svg)
         const simulation = d3.forceSimulation(nodes)
-              .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(100))
-              .force("charge", d3.forceManyBody().strength(-3000))
+              .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(80))
+              .force("charge", d3.forceManyBody().strength(-1600))
               .force("center", d3.forceCenter(width / 2, (height / 2) + 100))
               .force("x", d3.forceX())
               .force("y", d3.forceY())
@@ -333,14 +356,7 @@ const Home = () =>
                         .selectAll("g")
                         .data(nodes)
                         .join("g")  //Here, now we join the node constant to all updatedNodes contained in nodes "constant class" - purposely left open ended for spacing so it is easier to read and understand but also to make additions!
-                
-                    node.append("circle")
-                        .attr("stroke", "white")//(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}})
-                        .attr("stroke-width", 1.5)
-                        .attr("r", function(d){return d.radius})
-                        .attr('fill', "white")
-                        .attr("id", function(d){return d.name})//function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
-                  
+                    
                     node.append("text")
                         .attr("x", 30)
                         .attr("y", "0.31em")
@@ -349,7 +365,15 @@ const Home = () =>
                         .attr("fill", "none")
                         .attr("stroke", "black")
                         .attr("stroke-width", 3) //Here now on the same svg we can append both the circle nodes and text to them. The positions for that are given (exact x and y taken from observable link above since it looks nice but can easily change if need be)                
-        
+                 
+                    node.append("circle")
+                        .attr("stroke", "white")//(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}})
+                        .attr("stroke-width", 1.5)
+                        .attr("r", function(d){return d.radius})
+                        .attr('fill', function(d){return d.color})
+                        .attr("id", function(d){return d.name})//function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
+                  
+       
         //A little sneaky tooltip for ya!
                     node.append("rect")
                         .attr("id", "tooltip")
@@ -366,17 +390,24 @@ const Home = () =>
                         .attr('fill', 'black')
                         .attr('stroke', 'bold')
                         .attr('font-size', 35)
-                            .text("HI")//`Protein:${function(d){console.log(d.name); return d.name}} and Interaction Type(s): ${function(d){return d.interaction}}`)
-
+                    
                     //Draw PPI 
                     node.on("click", function(event, d)
                     {
                         //console.log(d3.select(this).select("circle"))
                         //console.log(d3.select(this).select("#tooltip"))
-                        console.log(d.name)
+                        //console.log(d.name)
                         //console.log(String(this.id))
                         //console.log(this.name)
-                        createPPI(d.name, masterArray)
+                        if(d.label.includes("#Pr"))
+                        {
+                            createPPI(d.name, masterArray)
+                        }
+                        else
+                        {
+                            alert("Molecules do not have a PPI Network")
+                        }
+
                     })
 
                     node.on("mouseover", function()
@@ -419,6 +450,7 @@ const Home = () =>
                 //Determine which layout organization to proceed with: protein-protein vs protein-molecule-protein
                 if(pathwayType === "Protein-Protein")
                 {
+                    //Go through all the proteins
                     for(var i = 0; i < masterArray.length; i++)
                     {
                         //console.log(masterArray[i]["pathway"])
@@ -428,22 +460,97 @@ const Home = () =>
                             var pathwayObject = 
                             {
                                 name: masterArray[i]["name"],
-                                radius: 20
+                                label: "#Pr" + masterArray[i]["name"],
+                                radius: 20,
+                                color: "white"
                             }
         
                             arr.push(pathwayObject)
                         }
                     }
+
+                    //Then connect to all pathways - WIP!!!
+                    /*for(var j = 0; j < masterArray.length; j++)
+                    {
+                        if(masterArray[j]["pathway"].includes(selectedPathway) && (masterArray[j]["pathwayConnection"] !== undefined) && !(arr.includes(masterArray[j]["Other Pathways Connected To"])))
+                        {
+                            console.log(masterArray[j]["pathwayConnection"])
+
+                            var pathwayObject = 
+                            {
+                                name: masterArray[j]["Other Pathways Connected To"],
+                                label: "#Pa" + masterArray[j]["Other Pathways Connected To"],
+                                width: 40,
+                                height: 20                            
+                            }
+
+                            arr.push(pathwayObject)
+                        }
+
+                        
+                        /*masterArray[j]["Other Pathways Connected To"].forEach(function(element)
+                                                                              {
+                                                                                  if(!(arr.includes(element)) && (element !== ""))
+                                                                                  {
+                                                                                        console.log(element)
+                                                                                        arr.push(element)
+                                                                                  }
+                                                                               })
+                    }*/
                 }
                 else if(pathwayType === "Protein-Molecule-Protein")
-                {
+                {                        
+                    //Temp array to hold what molecules have been added
+                    var addedMolecules = []
 
+                    //Go through all the proteins and molecules
+                    for(var i = 0; i < masterArray.length; i++)
+                    {                            
+                        //console.log(masterArray[i]["pathway"])
+                        if(masterArray[i]["pathway"].includes(selectedPathway))
+                        {
+                            //console.log(masterArray[i]["pathway"])
+                            //Here is the protein entry
+                            var pathwayObject = 
+                            {
+                                name: masterArray[i]["name"],
+                                label: "#Pr" + masterArray[i]["name"],
+                                radius: 20,
+                                color: "white"
+                            }
+        
+                            arr.push(pathwayObject)
+
+                            //Here is the molecule(s) entry
+                            masterArray[i]["molecules"].forEach(function(element)
+                                                                {
+                                                                    
+                                                                    if(!(addedMolecules.includes(element)) && (element !== ""))
+                                                                    {
+                                                                        //console.log(element)
+                                                                        var moleculeObject = 
+                                                                        {
+                                                                            name: element,
+                                                                            label: "#Mo" + element,
+                                                                            radius: 15,
+                                                                            color: "gold"
+                                                                        }
+                                                                    
+                                                                        addedMolecules.push(element)
+                                                                        arr.push(moleculeObject)
+                                                                    }
+
+                                                                })
+                        }
+                    }
                 }
 
+                console.log(addedMolecules)
+                addedMolecules = []
                 return arr;
             }
 
-            function assignLinks(masterArray, selectedPathway)
+            function assignLinks(masterArray, nodesP, selectedPathway)
             {
                 //Temporary arrays
                 //  - The first will hold source and target objects of the final map 
@@ -451,70 +558,132 @@ const Home = () =>
                 let arr = []
                 let lastIndex = 0
           
-                for(var i = 0; i < masterArray.length; i++)
+                if(pathwayType === "Protein-Protein")
                 {
-                    if(masterArray[i]["pathway"].includes(selectedPathway))
+                    for(var i = 0; i < masterArray.length; i++)
                     {
-                        let str = masterArray[i]["connections"]
-                        //console.log(masterArray[i] + '\n' + str)
-
-                        switch(str.length)
+                        if(masterArray[i]["pathway"].includes(selectedPathway))
                         {
-                            case 0:
-                                //console.log("HERE AT 0")
-                                arr.push("NOTHING")
-                                break;
+                            let str = masterArray[i]["connections"]
+                            //console.log(masterArray[i] + '\n' + str)
+                            masterArray[i]["connections"].forEach(function(protein)
+                                                                {
+                                                                    var pathwayObject = 
+                                                                    {
+                                                                        source: nodesP.findIndex(object => {return object.name === protein}),
+                                                                        target: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]})
+                                                                    }
+                                                                    arr.push(pathwayObject)
+                                                                })
 
-                            case 1:
-                                var pathwayObject = 
-                                {
-                                    source: i,
-                                    target: masterArray.findIndex(object => {return object.name === str})
-                                }
-                                arr.push(pathwayObject)
-                                break;
+                            /*switch(str.length)
+                            {
+                                case 0:
+                                    //console.log("HERE AT 0")
+                                    arr.push("NOTHING")
+                                    break;
 
-                            default:
-                                //console.log("Default")
-                                for(var j = 0; j <= str.length; j++)
-                                {
-                                    if(str[j] === ',' || j === str.length)
+                                case 1:
+                                    var pathwayObject = 
                                     {
-                                        //Now separate the string from the last knonw index to the column
-                                        let separateString = str.slice(lastIndex, j)
-                                        //console.log(separateString)
-
-                                        //Add it to the array and up the previous index to the next index after the comma
-                                        var pathwayObject = 
-                                        {
-                                          source: i,
-                                          target: masterArray.findIndex(object => {return object.name === separateString})
-                                        }
-                                        lastIndex = j + 1
-
-                                        arr.push(pathwayObject)
+                                        source: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]}),
+                                        target: nodesP.findIndex(object => {return object.name === str})
                                     }
-                                }
-                                //Need to reset last index for next iteration
-                                lastIndex = 0
-                
+                                    arr.push(pathwayObject)
+                                    break;
+
+                                default:
+                                    //console.log("Default")
+                                    for(var j = 0; j <= str.length; j++)
+                                    {
+                                        if(str[j] === ',' || j === str.length)
+                                        {
+                                            //Now separate the string from the last knonw index to the column
+                                            let separateString = str.slice(lastIndex, j)
+                                            //console.log(separateString)
+
+                                            //Add it to the array and up the previous index to the next index after the comma
+                                            var pathwayObject = 
+                                            {
+                                                source: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]}),
+                                                target: nodesP.findIndex(object => {return object.name === separateString})
+                                            }
+                                            lastIndex = j + 1
+
+                                            arr.push(pathwayObject)
+                                        }
+                                    }
+                                    //Need to reset last index for next iteration
+                                    lastIndex = 0
+                    
+                            }*/
+                        }
+                    }
+                }
+                else if(pathwayType === "Protein-Molecule-Protein")
+                {
+                    for(var i = 0; i < masterArray.length; i++)
+                    {
+                        if(masterArray[i]["pathway"].includes(selectedPathway))
+                        {
+                            //Need to link together the molecules to their respective proteins in this case
+                            masterArray[i]["molecules"].forEach(function(molecule)
+                                                                {
+                                                                    var pathwayObject = 
+                                                                    {
+                                                                        source: nodesP.findIndex(object => {return object.name === molecule}),
+                                                                        target: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]})
+                                                                    }
+                                                                    arr.push(pathwayObject)
+                                                                })
+                            //console.log(masterArray[i] + '\n' + str)
+
+                            /*switch(str.length)
+                            {
+                                case 0:
+                                    //console.log("HERE AT 0")
+                                    arr.push("NOTHING")
+                                    break;
+
+                                case 1:
+                                    var pathwayObject = 
+                                    {
+                                        source: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]}),
+                                        target: nodesP.findIndex(object => {return object.name === str})
+                                    }
+                                    arr.push(pathwayObject)
+                                    break;
+
+                                default:
+                                    //console.log("Default")
+                                    for(var j = 0; j <= str.length; j++)
+                                    {
+                                        if(str[j] === ',' || j === str.length)
+                                        {
+                                            //Now separate the string from the last knonw index to the column
+                                            let separateString = str.slice(lastIndex, j)
+                                            //console.log(separateString)
+
+                                            //Add it to the array and up the previous index to the next index after the comma
+                                            var pathwayObject = 
+                                            {
+                                                source: nodesP.findIndex(object => {return object.name === masterArray[i]["name"]}),
+                                                target: nodesP.findIndex(object => {return object.name === separateString})
+                                            }
+                                            lastIndex = j + 1
+
+                                            arr.push(pathwayObject)
+                                        }
+                                    }
+                                    //Need to reset last index for next iteration
+                                    lastIndex = 0
+                    
+                            }*/
                         }
                     }
                 }
                 return arr;
             }
-        }
-
-        //Redraw function with radio button inputs
-        function updatePathwayLayout(masterArray, pathwayType)
-        {
-            drawPathway(masterArray, pathwayType, selectedPathway)
-        }
-
-        //Redraw function with dropdown inputs
-        function redrawPathwayType(masterArray, selectedPathway)
-        {
-
         }
     }
 
@@ -549,8 +718,8 @@ const Home = () =>
         d3.select("#PPI")
         .append("text")
         .attr("id", "PPI-Title-Sample")
-        .attr("x", '200') 
-        .attr("y", '50')
+        .attr("x", "310") 
+        .attr("y", "50")
         .attr("fill", "black")
         .attr("stroke", "bold")
         .attr("font-size", 30)
@@ -575,8 +744,8 @@ const Home = () =>
         d3.select("#PPI")
           .append("text")
           .attr("id", "PPI Title")
-          .attr("x", '140') 
-          .attr("y", '50')
+          .attr("x", "245") 
+          .attr("y", "50")
           .attr("fill", "black")
           .attr("stroke", "bold")
           .attr("font-size", 30)
@@ -661,12 +830,12 @@ const Home = () =>
                     //First, add all the other proteins that it interacts with
                     protein["PPINetwork"].forEach(function(element)
                                                 {
-                                                    updatedNodes.push({name: element, radius: 20, interaction: protein["PPIInteraction"][i]})
+                                                    updatedNodes.push({name: element, radius: 20, interaction: protein["PPIInteraction"][i], legendLabel: ""})
                                                     i++
                                                 })   
 
                     //Then, add the protein that we like to look at
-                    updatedNodes.push({name: protein["name"], radius: 20})
+                    updatedNodes.push({name: protein["name"], radius: 20, interaction: "None on self", legendLabel: ""})
                 }
 
                 function createUpdatedLinks(protein)
@@ -703,7 +872,7 @@ const Home = () =>
         const simulation = d3.forceSimulation(nodes)
               .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(300))
               .force("charge", d3.forceManyBody().strength(-2000))
-              .force("center", d3.forceCenter(width / 2, (height / 2) + 100))
+              .force("center", d3.forceCenter((width / 2) - 50, (height / 2) + 100))
               .force("x", d3.forceX())
               .force("y", d3.forceY())
               .force('collide', d3.forceCollide().radius(function(d){return d.radius}))
@@ -720,7 +889,7 @@ const Home = () =>
                         .selectAll("path")
                         .data(links)
                         .join("path")
-                        .attr("stroke", function(d){if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}) //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
+                        .attr("stroke", function(d){if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){console.log(d.interaction); d.legendLabel = "Multiple (hover over proteins)"; return colorLegend(d.legendLabel)}else{return colorLegend(d.interaction)}}) //Now, we select all paths as before but link it to the updatedLinks data stored in links - all black stroke lines
 
         //Updated and specify the various attributes associated with each node that is a subset of the whole nodes class
         //Here I am just defining the basic attibutes for the nodes similarly to how it was done in the links above 
@@ -733,7 +902,7 @@ const Home = () =>
                         .join("g")  //Here, now we join the node constant to all updatedNodes contained in nodes "constant class" - purposely left open ended for spacing so it is easier to read and understand but also to make additions!
                 
                     node.append("circle")
-                        .attr("stroke", function(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.interaction = "Multiple (hover over proteins)"; return colorLegend(d.interaction)}else{return colorLegend(d.interaction)}}})
+                        .attr("stroke", function(d){if(d.name === proteinInterest){return "white"}else{if(d.interaction === undefined || d.interaction.indexOf("and") !== -1){d.legendLabel = "Multiple (hover over proteins)"; return colorLegend(d.legendLabel)}else{return colorLegend(d.interaction)}}})
                         .attr("stroke-width", 1.5)
                         .attr("r", function(d){return d.radius})
                         .attr('fill', function(d){if(d.name === proteinInterest){return "green"}else{return "black"}}) //Now specifying the different attribtues that are important for each node to be a circle visible on the svg!
@@ -755,36 +924,66 @@ const Home = () =>
                         .attr("width", 1)
                         .attr("height", 1)
                         .attr("fill", "white")
+                        .attr("stroke", "black")
                         .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
                         .style("visibility", "hidden") // hide it from default at the start so it only appears on hover    
                         
                     node.append("text")
-                        .attr("id", "tooltipText")
+                        .attr("id", "tooltipText1")
                         .attr("x", 5) 
                         .attr("y", 15)
                         .attr('fill', 'black')
                         .attr('stroke', 'bold')
                         .attr('font-size', 12.5)
                         .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
-                        //.style("visibility", "hidden") // hide it from default at the start so it only appears on hover   
-                        .text(function(d){return "Protein: " + d.name + "\r\nInteraction(s): " + d.interaction})
+                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover   
+                        .text(function(d){return "Protein: " + d.name})
+
+                    node.append("text")
+                        .attr("id", "tooltipText2")
+                        .attr("x", 5) 
+                        .attr("y", 30)
+                        .attr('fill', 'black')
+                        .attr('stroke', 'bold')
+                        .attr('font-size', 12.5)
+                        .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
+                        .style("visibility", "hidden") // hide it from default at the start so it only appears on hover   
+                        .text(function(d){return "Interaction(s): " + d.interaction})
         
                     node.on("mouseover", function()
                         {
-                            console.log("I AM HERE")
-
+                            //Make the square visible
                             d3.select(this)
                               .select("#tooltipSquare")
-                              .attr("width", 125)
-                              .attr("height", 80)
+                              .attr("width", 400)
+                              .attr("height", 40)
+                              .style("visibility", "visible")
+
+                            //Make the text visible
+                            d3.select(this)
+                              .select("#tooltipText1")
+                              .style("visibility", "visible")
+
+                            d3.select(this)
+                              .select("#tooltipText2")
                               .style("visibility", "visible")
                         })
                         .on("mouseout", function()
                         {
+                            //Make the square invisible
                             d3.select(this)
                               .select("#tooltipSquare")
                               .attr("width", 1)
                               .attr("height", 1)
+                              .style("visibility", "hidden")
+                            
+                            //Make the text invisible
+                            d3.select(this)
+                              .select("#tooltipText1")
+                              .style("visibility", "hidden")
+
+                            d3.select(this)
+                              .select("#tooltipText2")
                               .style("visibility", "hidden")
                         })
 
@@ -917,9 +1116,9 @@ const Home = () =>
         <div className="home">
             <h2>The Pathway Itself!</h2>
             <select id="selectButton"></select>
-            <svg id="Pathway" width="1800" height="1500"></svg>
-            <svg id="Regulation" width="900" height="1000"></svg>
-            <svg id="PPI" width="900" height="1000"></svg>
+            <svg id="Pathway" width="1800" height="1700"></svg>
+            <svg id="Regulation" width="700" height="1000"></svg>
+            <svg id="PPI" width="1100" height="1000"></svg>
             
         </div>
     );
