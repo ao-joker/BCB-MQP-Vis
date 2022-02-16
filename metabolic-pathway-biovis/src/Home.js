@@ -168,7 +168,7 @@ const Home = () =>
 
             //Radio button creating
             var labels= ["Protein-Protein", "Protein-Molecule-Protein"] //A set of labels for the buttons. All other layouts should be pused onto this list!
-            var TFlabel = ["Enable Transcription Factors"]
+            var TFlabel = ["Toggle Transcription Factors"]
             var layoutType = ["Protein-Protein", "Protein-Molecule-Protein"] //The layouts that are applicable. Variable to store names as strings for id attribute creation
             var rbWidth = 210 //button width
             var rbHeight = 30 //button height
@@ -236,8 +236,8 @@ const Home = () =>
                              .attr("y", y0)
                              .attr("rx", 5) //Give nice rounded corners
                              .attr("ry", 5) //Give nice rounded corners
-                             .attr("stroke", "black")
-                             .attr("fill", "red")
+                             .attr("stroke", function(d){if(pathwayType == this.id){return "white"}else{return "black"}})
+                             .attr("fill", function(d){if(pathwayType == this.id){return "blue"}else{return "red"}})
 
             //adding text to each button group, centered within the button rect
             radioButtonGroups.append("text")
@@ -284,7 +284,7 @@ const Home = () =>
                                                     //Get rid of the existing pathway and redraw everything that is basically there
                                                     d3.select("#Pathway").selectAll("svg > *").remove()
                                                     drawBasicBackground()
-                                                    updateRadioButtons(d3.select(this), d3.select(this.parentNode))
+                                                    //updateRadioButtons(d3.select(this), d3.select(this.parentNode))
                                                     
                                                     //Draw the new pathway
                                                     drawPathway(masterArray, pathwayType, selectedPathway, TFPresent)
@@ -308,8 +308,8 @@ const Home = () =>
                                .attr("y", y0TF)
                                .attr("rx", 5) //Give nice rounded corners
                                .attr("ry", 5) //Give nice rounded corners
-                               .attr("stroke", "black")
-                               .attr("fill", "red")
+                               .attr("stroke", function(d){if(TFPresent == true){return "white"}else{return "black"}})
+                               .attr("fill", function(d){if(TFPresent == true){return "blue"}else{return "red"}})
 
             //adding text to each button group, centered within the button rect
             radioButtonTFGroups.append("text")
@@ -401,7 +401,7 @@ const Home = () =>
         //the links and nodes attributes specific to this svg)
         const simulation = d3.forceSimulation(nodes)
               .force("link", d3.forceLink(links).id(function(d){return d.index}).distance(70))
-              .force("charge", d3.forceManyBody().strength(-1300))
+              .force("charge", d3.forceManyBody().strength(function(d){if(pathwayType == "Protein-Protein"){return -1600}else{return -1300}}))
               .force("center", d3.forceCenter(width / 2, (height / 2) + 100))
               .force("x", d3.forceX())
               .force("y", d3.forceY())
