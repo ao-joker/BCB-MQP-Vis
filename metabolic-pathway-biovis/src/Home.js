@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import * as d3 from "d3";
 import data from "./FINAL-SET.csv";
 
+
+
 const Home = () => 
 {
     //YOU BEST FIX THOSE SVGs! THE SIZES AND LOCATION NEED DRASTIC ADJUSTING
