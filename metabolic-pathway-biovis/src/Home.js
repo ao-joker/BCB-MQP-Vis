@@ -841,7 +841,14 @@ const Home = () =>
         }
     }
 
-    function makeRegulationList(masterArray)
+    /*
+        Make the greater regulation input list portion here with the background and then the mechanism to upload 
+        in a file of choice (csv) with the protein name (Rv version) and the fold change
+
+        This is done using express!
+    */
+    //Background is blue
+    function makeRegulationListBackground()
     {
        
         d3.select("#Regulation")
@@ -855,8 +862,24 @@ const Home = () =>
   
     }
 
-    //This function makes the base background the svg is drawn on top off 
-    //Also makes a legend which are kept constant in the overall scheme regardless of how much the PPI will change
+    //Actual file upload
+    function makeRegulationList(masterArray)
+    {
+        makeRegulationListBackground()
+        
+        //Variables and express notes
+        /*const express = require("express");
+        const fileUpload = require("express-fileupload");
+
+        app = express();
+        ap*/
+
+    }
+
+    /*
+        This function makes the base background the svg is drawn on top off 
+        Also makes a legend which are kept constant in the overall scheme regardless of how much the PPI will change
+    */
     function makePPIBase(masterArray)
     {
         d3.select("#PPI")

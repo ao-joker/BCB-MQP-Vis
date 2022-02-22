@@ -1,5 +1,6 @@
 import './App.css';
 import Home from './Home';
+import FileUpload from  './FileUpload';
 
 function App() {
 
@@ -14,6 +15,8 @@ function App() {
          <h4>{acknowledgements}</h4>
          <Home></Home>
       </div>
+
+      <FileUpload></FileUpload>
     </div>
   );
 }
